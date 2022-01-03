@@ -1,0 +1,23 @@
+.Formular
+{
+    background-color:rgb(241, 234, 234);
+}
+.lblFormular
+{
+    margin-left: 20px;
+    margin-bottom: 30px;
+}
+.lblFormularInfo
+{
+    color:red;
+}
+.divFormularPrva
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 150vh;
+    background-color:rgb(241, 234, 234);
+
+}

@@ -1,0 +1,8 @@
+.divNovosti
+{
+    background-color:rgb(241, 234, 234);
+    height: 120vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

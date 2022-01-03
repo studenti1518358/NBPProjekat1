@@ -1,0 +1,50 @@
+.predlog
+{
+    display: flex;
+    background-color: white;
+    width: 90%;
+    height: 15cm;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+    box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+    margin-left: 110px;
+    margin-right: 110px;
+    margin-top: 20px;
+    
+}
+.predlogDivImg
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.predlogImg
+{
+   
+    height: 350px;
+    width: 260px;
+}
+.divPredlogOpisPom
+{
+    display: flex;
+    flex-direction: column;
+}
+.divPredlogOpis
+{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: space-between;
+}
+.lblPreglogOpis
+{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: large;
+}
+.divPredlogDugmici
+{
+    display: flex;
+    width: 100%;
+    align-items: flex-end;
+    justify-content: flex-end;
+}

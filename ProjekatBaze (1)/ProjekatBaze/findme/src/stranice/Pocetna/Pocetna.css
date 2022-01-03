@@ -1,0 +1,49 @@
+  
+.pocetna-container
+{
+   background-image:url('./pozadina.jpg');
+    background-color: wheat;
+    height: 120vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    object-fit: contain;
+    margin-top: 0;
+    padding-top: 150px;
+}
+.Naslov
+{
+    font-size: 1.9cm;
+    font-weight: 400;
+    text-shadow: 
+    0 0 5px rgb(255, 214, 214),
+    0 0 10px rgb(255, 214, 214),
+    0 0 20px rgb(255, 214, 214),
+    0 0 30px rgb(255, 214, 214),
+    0 0 40px rgb(255, 214, 214),
+    0 0 60px rgb(190, 116, 116),
+    0 0 70px rgb(51, 45, 45);
+}
+
+.NaslovDiv
+{
+    display: flex;
+    flex-direction: column;
+    
+}
+.pocetna-Dugmici
+{
+    margin-top: 15vh;
+    display: flex;
+    width: 90vh;
+    justify-content: space-between;
+}
+.btnPocetna
+{
+    width: 20vh;
+    height: 6vh;
+    background-color: rgb(90, 75, 89);
+    color: cornsilk;
+}

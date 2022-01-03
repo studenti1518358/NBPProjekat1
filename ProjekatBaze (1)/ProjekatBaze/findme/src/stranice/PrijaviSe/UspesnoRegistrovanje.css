@@ -1,0 +1,44 @@
+.divUspesnoRegistrovanje
+{
+    background-image:url('./pozadina.jpg');
+    height: 120vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    object-fit: contain;
+    padding-top: 20vh;
+}
+.lblUspesnoReg
+{
+    color:green;
+    font-size: 1.9cm;
+    font-weight: 400;
+    text-shadow: 
+    0 0 5px rgb(255, 214, 214),
+    0 0 10px rgb(255, 214, 214),
+    0 0 20px rgb(255, 214, 214),
+    0 0 30px rgb(255, 214, 214),
+    0 0 40px rgb(255, 214, 214);
+}
+.lblUspesnoRegg
+{
+    
+    font-size: 1cm;
+    font-weight: 400;
+    text-shadow: 
+    0 0 5px rgb(255, 214, 214),
+    0 0 10px rgb(255, 214, 214),
+    0 0 20px rgb(255, 214, 214),
+    0 0 30px rgb(255, 214, 214),
+    0 0 40px rgb(255, 214, 214);
+}
+.btnUspesnoReg
+{
+    margin-top: 20vh;
+    width: 30vh;
+    height: 5vh;
+    background-color: rgb(78, 62, 75);
+    color: honeydew;
+}

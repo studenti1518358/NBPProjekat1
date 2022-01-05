@@ -9,7 +9,7 @@ export default function Pocetna() {
   }
   const handleHistory2=()=>
   {
-    navigate("/registrujSe")
+    navigate("/registracija/registrujSe")
   }
     return (
         <div className='pocetna-container'>

@@ -5,30 +5,28 @@ import Topbar from './components/Topbar'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Pocetna from './stranice/Pocetna/Pocetna'
 import PrijaviSe from './stranice/PrijaviSe/PrijaviSe'
-import RegistrujSe from './stranice/PrijaviSe/RegistrujSe'
-import FormularPrva from './stranice/Formular/FormPrva'
-import FormularDruga from './stranice/Formular/FormDruga'
-import FormularTreca from './stranice/Formular/FormTreca'
+
 import UspesnoRegistrovanje from './stranice/PrijaviSe/UspesnoRegistrovanje'
 import Profil from './stranice/Profil/Profil'
 import Novosti from './stranice/Novosti/Novosti'
 import Predlozi from './stranice/Predlozi/Predlozi'
 import {Chat} from "./stranice/chat/Chat"
+import Registracija from './stranice/PrijaviSe/Registracija'
+import Store from './context/Store'
 function App() {
   return (
    <div>
   
    <>
+   <Store>
       <Router>
         <Navbar />
         <Topbar/>
         <Routes>
         <Route path='/' element={<Pocetna/>}/>
         <Route path='/prijaviSe' element={<PrijaviSe/>}/>
-        <Route path='/registrujSe' element={<RegistrujSe/>}/>
-        <Route path='/formPrva' element={<FormularPrva/>}/>
-        <Route path='/formDruga' element={<FormularDruga/>}/>
-        <Route path='/formTreca' element={<FormularTreca/>}/>
+        <Route path='/registracija/*' element={<Registracija/>}/>
+       
         <Route path='/UspesnoRegistrovanje' element={<UspesnoRegistrovanje/>}/>
         <Route path='/Profil' element={<Profil/>}/>
         <Route path='/PocetnaStrana' element={<Novosti/>}/>
@@ -37,6 +35,7 @@ function App() {
         </Routes>
       
       </Router>
+      </Store>
     </>
    </div> 
   )

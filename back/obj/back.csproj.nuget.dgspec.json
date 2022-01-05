@@ -52,6 +52,10 @@
               "target": "Package",
               "version": "[4.4.0, )"
             },
+            "Neo4jClient": {
+              "target": "Package",
+              "version": "[4.1.18, )"
+            },
             "StackExchange.Redis": {
               "target": "Package",
               "version": "[2.2.88, )"

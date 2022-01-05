@@ -91,3 +91,4 @@ C:\Users\user\Desktop\NBP\projekat1\back\bin\Debug\net5.0\Neo4j.Driver.dll
 C:\Users\user\Desktop\NBP\projekat1\back\bin\Debug\net5.0\Microsoft.IdentityModel.JsonWebTokens.dll
 C:\Users\user\Desktop\NBP\projekat1\back\bin\Debug\net5.0\Microsoft.IdentityModel.Logging.dll
 C:\Users\user\Desktop\NBP\projekat1\back\bin\Debug\net5.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\user\Desktop\NBP\projekat1\back\bin\Debug\net5.0\Neo4jClient.dll

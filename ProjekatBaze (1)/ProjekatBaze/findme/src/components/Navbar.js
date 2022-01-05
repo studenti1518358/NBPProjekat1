@@ -92,7 +92,7 @@ const Navbar = () => {
             </li>
 
             <li className="nav-item">
-              <NavLink className="nav-link" to="/registrujSe" exact>
+              <NavLink className="nav-link" to="/registracija/registrujSe" exact>
                Registruj se
               </NavLink>
             </li>

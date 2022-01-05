@@ -58,10 +58,13 @@ namespace back
                 return BadRequest("Invalid credentials");
 
             var db = _redis.GetDatabase();
+            if (await db.KeyExistsAsync($"username:{user.Username}") == false)
+                return BadRequest("Invalid credentials");
             string usernameKey = $"username:{user.Username}";
             int userId = (int)await db.StringGetAsync(usernameKey);
-            string hashedPassword = await db.HashGetAsync($"user:${userId}", "password");
-            if (BCrypt.Net.BCrypt.Verify(user.Password, hashedPassword))
+            string hashedPassword = await db.HashGetAsync($"user:{userId}", "password");
+          
+            if (!BCrypt.Net.BCrypt.Verify(user.Password, hashedPassword))
                 return BadRequest("Invalid credentials");
 
             var jwt = _jwtService.GenerateJwtToken(userId);
@@ -85,6 +88,13 @@ namespace back
 
                 string key = $"user:{userId}";
                 var db = _redis.GetDatabase();
+                User user=new User();
+                user.Id = userId;
+                user.Username = await db.HashGetAsync(key, "username");
+                user.Password= await db.HashGetAsync(key, "password");
+                user.isOnline= (bool)await db.HashGetAsync(key, "isOnline");
+                user.Email=await db.HashGetAsync(key, "username");
+                return Ok(user);
             }
             catch (Exception e)
             {

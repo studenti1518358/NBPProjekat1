@@ -143,7 +143,7 @@ namespace back
             //upisuvanje osnovnih podataka o korisniku
             var userInfo = user.OsnovneInformacije;
             var statementText = new StringBuilder();
-            statementText.Append("CREATE (user:User {username: $username,password:$password,id:$id,email:$email,ime:$ime,prezime:$prezime,godine:$godine,mesto:$mesto,bracniStatus:$bracniStatus,zanimanje:$zanimanje,pol:$pol})");
+            statementText.Append("CREATE (user:User {username: $username,password:$password,id:$id,email:$email,ime:$ime,prezime:$prezime,godine:$godine,mesto:$mesto,bracniStatus:$bracniStatus,zanimanje:$zanimanje,pol:$pol,godineOd:$godineOd,godineDo:$godineDo,polPartnera:$polPartnera})");
             var statementParameters = new Dictionary<string, object>
         {
             {"username", userInfo.Username },
@@ -156,7 +156,10 @@ namespace back
                 {"mesto",userInfo.MestoStanovanja },
                 {"bracniStatus",userInfo.BracniStatus },
                 {"zanimanje",userInfo.Zanimanje },
-                {"pol",userInfo.Pol}
+                {"pol",userInfo.Pol},
+                {"godineOd",user.TrazimKodPartnera.GodineOd },
+                {"godineDo",user.TrazimKodPartnera.GodineDo },
+                {"polPartnera",user.TrazimKodPartnera.Pol }
 
         };
             var session = this._neo4jDriver.AsyncSession();
@@ -169,20 +172,23 @@ namespace back
                 if ((pi.PropertyType == typeof(double) && (double)pi.GetValue(izgledKorisnika) != 0) || (pi.PropertyType == typeof(string) && (string)pi.GetValue(izgledKorisnika) != ""))
                 {
                     statementText = new StringBuilder();
-                    statementText.Append($"MERGE (atribut:{pi.Name} {{value:$value}})");
+                    statementText.Append($"MERGE (atribut:Osobina {{name:$name,value:$value}})");
                     statementParameters = new Dictionary<string, object>
                 {
-                    { "value",pi.GetValue(izgledKorisnika) }
+                    { "value",pi.GetValue(izgledKorisnika) },
+                    {"name",pi.Name}
                 };
                     session = this._neo4jDriver.AsyncSession();
                     result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
 
                     statementText = new StringBuilder();
-                    statementText.Append($"MATCH (a: User), (b:{pi.Name}) WHERE a.username = $username AND b.value = $value CREATE(a) -[r: POSEDUJE]->(b) RETURN type(r)");
+                    statementText.Append($"MATCH (a: User), (b:Osobina) WHERE a.username = $username AND b.value = $value AND b.name=$name CREATE(a) -[r: POSEDUJE]->(b) RETURN type(r)");
                     statementParameters = new Dictionary<string, object>
                 {
                     { "username",userInfo.Username },
-                    { "value",pi.GetValue(izgledKorisnika) }
+                    { "value",pi.GetValue(izgledKorisnika) },
+                      {"name",pi.Name}
+
                 };
                     session = this._neo4jDriver.AsyncSession();
                     result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
@@ -197,20 +203,22 @@ namespace back
                 if ((pi.PropertyType == typeof(double) && (double)pi.GetValue(izgledPartnera) != 0) || (pi.PropertyType == typeof(string) && (string)pi.GetValue(izgledPartnera) != ""))
                 {
                     statementText = new StringBuilder();
-                    statementText.Append($"MERGE (atribut:{pi.Name}{{value:$value}})");
+                    statementText.Append($"MERGE (atribut:Osobina {{value:$value,name:$name}})");
                     statementParameters = new Dictionary<string, object>
                 {
-                    { "value",pi.GetValue(izgledPartnera) }
+                    { "value",pi.GetValue(izgledPartnera) },
+                      {"name",pi.Name}
                 };
                     session = this._neo4jDriver.AsyncSession();
                     result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
 
                     statementText = new StringBuilder();
-                    statementText.Append($"MATCH (a: User), (b:{pi.Name}) WHERE a.username = $username AND b.value = $value CREATE(a) -[r: INTERESUJEME]->(b) RETURN type(r)");
+                    statementText.Append($"MATCH (a: User), (b:Osobina) WHERE a.username = $username AND b.value = $value AND b.name=$name CREATE(a) -[r: TRAZIM]->(b) RETURN type(r)");
                     statementParameters = new Dictionary<string, object>
                 {
                     { "username",userInfo.Username },
-                    { "value",pi.GetValue(izgledPartnera) }
+                    { "value",pi.GetValue(izgledPartnera) },
+                      {"name",pi.Name}
                 };
                     session = this._neo4jDriver.AsyncSession();
                     result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
@@ -227,26 +235,83 @@ namespace back
                 if ((pi.PropertyType == typeof(double) && (double)pi.GetValue(interesovanja) != 0) || (pi.PropertyType == typeof(string) && (string)pi.GetValue(interesovanja) != ""))
                 {
                     statementText = new StringBuilder();
-                    statementText.Append($"MERGE (atribut:{pi.Name} {{value:$value}})");
+                    statementText.Append($"MERGE (atribut:Osobina {{value:$value,name:$name}})");
                     statementParameters = new Dictionary<string, object>
                 {
-                    { "value",pi.GetValue(interesovanja) }
+                    { "value",pi.GetValue(interesovanja) },
+                      {"name",pi.Name}
                 };
                     session = this._neo4jDriver.AsyncSession();
                     result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
 
                     statementText = new StringBuilder();
-                    statementText.Append($"MATCH (a: User), (b:{pi.Name}) WHERE a.username = $username AND b.value = $value CREATE(a) -[r: INTERESUJEME]->(b) RETURN type(r)");
+                    statementText.Append($"MATCH (a: User), (b:Osobina) WHERE a.username = $username AND b.value = $value AND b.name=$name CREATE(a) -[r: INTERESUJEME]->(b) RETURN type(r)");
                     statementParameters = new Dictionary<string, object>
                 {
                     { "username",userInfo.Username },
-                    { "value",pi.GetValue(interesovanja) }
+                    { "value",pi.GetValue(interesovanja) },
+                      {"name",pi.Name}
                 };
                     session = this._neo4jDriver.AsyncSession();
                     result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
                 }
 
             }
+            //upisivanje tipa veze koji se trazi
+            if (user.TrazimKodPartnera.TipVeze!="")
+            {
+                statementText = new StringBuilder();
+                statementText.Append($"MERGE (atribut:Osobina {{value:$value,name:$name}})");
+                statementParameters = new Dictionary<string, object>
+                {
+                    { "value",user.TrazimKodPartnera.TipVeze },
+                    {"name","tipVeze" }
+                    
+                };
+                session = this._neo4jDriver.AsyncSession();
+                result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
+
+                statementText = new StringBuilder();
+                statementText.Append($"MATCH (a: User), (b:Osobina) WHERE a.username = $username AND b.value = $value AND b.name=$name  CREATE(a) -[r: INTERESUJEME]->(b) RETURN type(r)");
+                statementParameters = new Dictionary<string, object>
+                {
+                    { "username",userInfo.Username },
+                    { "value",user.TrazimKodPartnera.TipVeze },
+                    {"name","tipVeze" }
+                      
+                };
+                session = this._neo4jDriver.AsyncSession();
+                result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
+            }
+            //dodavanje cvora za mesto stanovanja
+            if (user.OsnovneInformacije.MestoStanovanja != "")
+            {
+                statementText = new StringBuilder();
+                statementText.Append($"MERGE (atribut:Osobina {{value:$value,name:$name}})");
+                statementParameters = new Dictionary<string, object>
+                {
+                    { "value",user.OsnovneInformacije.MestoStanovanja },
+                    {"name","mesto" }
+
+                };
+                session = this._neo4jDriver.AsyncSession();
+                result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
+
+                statementText = new StringBuilder();
+                statementText.Append($"MATCH (a: User), (b:Osobina) WHERE a.username = $username AND b.value = $value AND b.name=$name  CREATE(a) -[r: ZIVIM]->(b) RETURN type(r)");
+                statementParameters = new Dictionary<string, object>
+                {
+                    { "username",userInfo.Username },
+                    { "value",user.OsnovneInformacije.MestoStanovanja },
+                    {"name","mesto"}
+
+                };
+                session = this._neo4jDriver.AsyncSession();
+                result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
+            }
+
+
+
             return true;
         }
 

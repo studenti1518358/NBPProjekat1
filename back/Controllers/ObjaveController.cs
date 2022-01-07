@@ -71,7 +71,7 @@ namespace back
                 new HashEntry("date",objava.Date),
                 new HashEntry("tekst",objava.Text)
             });
-         var followers=await db.SetMembersAsync($"author:{authorId}:followers");
+         var followers=await db.SetMembersAsync($"user:{authorId}:followers");
           foreach (RedisValue follower in followers)
             {
                 long followerId = (long)follower;

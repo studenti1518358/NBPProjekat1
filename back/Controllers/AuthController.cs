@@ -94,6 +94,9 @@ namespace back
                 user.Password= await db.HashGetAsync(key, "password");
                 user.isOnline= (bool)await db.HashGetAsync(key, "isOnline");
                 user.Email=await db.HashGetAsync(key, "username");
+                user.ProfilnaSrc=await db.HashGetAsync(key, "ProfilnaSrc");
+                user.NaslovnaSrc=await db.HashGetAsync(key, "NaslovnaSrc");
+
                 return Ok(user);
             }
             catch (Exception e)
@@ -102,6 +105,8 @@ namespace back
             }
             return Ok();
         }
+
+
 
         [HttpPost]
         [Route("logoutUser")]

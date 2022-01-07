@@ -13,6 +13,7 @@ import Predlozi from './stranice/Predlozi/Predlozi'
 import {Chat} from "./stranice/chat/Chat"
 import Registracija from './stranice/PrijaviSe/Registracija'
 import Store from './context/Store'
+import Fotografije from './stranice/Fotografije/Fotografije'
 function App() {
   return (
    <div>
@@ -26,7 +27,7 @@ function App() {
         <Route path='/' element={<Pocetna/>}/>
         <Route path='/prijaviSe' element={<PrijaviSe/>}/>
         <Route path='/registracija/*' element={<Registracija/>}/>
-       
+        <Route path='/Fotografije' element={<Fotografije/>}/>
         <Route path='/UspesnoRegistrovanje' element={<UspesnoRegistrovanje/>}/>
         <Route path='/Profil' element={<Profil/>}/>
         <Route path='/PocetnaStrana' element={<Novosti/>}/>

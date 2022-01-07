@@ -1,5 +1,7 @@
 using System;
-
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using Microsoft.WindowsAzure.MediaServices.Client;
 
 namespace back.entities
@@ -13,5 +15,12 @@ namespace back.entities
         public string Password { get; set; }
 
         public string Email { get; set; }
+
+        public string ProfilnaSrc { get;set;}
+
+        public string NaslovnaSrc { get;set;}
+
+        public List<string> Fotografije { get; set; }
+
     }
 }

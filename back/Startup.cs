@@ -14,7 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
-
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 namespace back
 {
     public class Startup
@@ -29,7 +30,7 @@ namespace back
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options => {
+            /*services.AddCors(options => {
                 options.AddPolicy("CORS", builder =>
                 {
                     builder.AllowAnyHeader()
@@ -37,7 +38,8 @@ namespace back
                     .AllowCredentials()
                     .WithOrigins(new[] { "http://localhost:3000" });
                 });
-            });
+            });*/
+            services.AddCors();
 
             services.AddControllers();
             services.AddSignalR();
@@ -60,12 +62,22 @@ namespace back
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "back v1"));
             }
+            app.UseStaticFiles(new StaticFileOptions{
+                FileProvider=new PhysicalFileProvider(Path.Combine(env.ContentRootPath,"Images")),
+                 RequestPath="/Images"
+            });
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseCors("CORS");
+           // app.UseCors("CORS");
+           app.UseCors(options =>
+            options.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins(new string[]{
+                "http://localhost:3000",
+                "http://localhost:8080",
+                "http://localhost:4200"
+            }));
 
             app.UseAuthorization();
 

@@ -1,9 +1,11 @@
-import React , {useEffect} from 'react'
+import React , {useEffect,useState} from 'react'
 import './Navbar.css'
 import { NavLink } from 'react-router-dom'
 import $ from 'jquery'
 
 const Navbar = () => {
+  const [prikazi,setPrikazi]=useState(true)  
+  const [prikaziOdjviSe,setPrikaziOdjaviSe]=useState(false)  
 
   function animation(){
     var tabsNewAnim = $('#navbarSupportedContent')
@@ -40,13 +42,24 @@ const Navbar = () => {
     $(window).on('resize', function(){
       setTimeout(function(){ animation()}, 500)
     })
-    
-  }, [])
+    let tok=localStorage.getItem("jwt");
+        if(tok!=null)
+        {
+            setPrikazi(false)
+            setPrikaziOdjaviSe(true)
 
+        }
+  }, [])
+  const odjaviSe=()=>{
+          
+    localStorage.clear()
+   
+    window.location.reload()
+}
   return (
   <nav className="navbar navbar-expand-lg navbar-mainbg">
     
-      <NavLink className="navbar-brand navbar-logo" to="/" exact>
+      <NavLink className="navbar-brand navbar-logo" to="/" >
         FindNewLove
       </NavLink>
       <button 
@@ -68,34 +81,40 @@ const Navbar = () => {
               <div className="right"></div>
             </div>
             <li className="nav-item active">
-              <NavLink className="nav-link" to="/Profil" exact>
+              <NavLink className="nav-link" to="/Profil">
                Profil 
               </NavLink>
              
             </li>
             <li className="nav-item active">
-              <NavLink className="nav-link" to="/PocetnaStrana" exact>
+              <NavLink className="nav-link" to="/PocetnaStrana" >
                Početna
               </NavLink>
             </li>
 
             <li className="nav-item active">
-              <NavLink className="nav-link" to="/Predlozi" exact>
+              <NavLink className="nav-link" to="/Predlozi" >
                Predlozi
               </NavLink>
             </li>
 
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/prijaviSe" exact>
+           {prikazi? <li className="nav-item">
+              <NavLink className="nav-link" to="/prijaviSe" >
                 Prijavi se
               </NavLink> 
-            </li>
+            </li>:null}
 
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/registracija/registrujSe" exact>
+          {prikazi? <li className="nav-item">
+              <NavLink className="nav-link" to="/registracija/registrujSe" >
                Registruj se
               </NavLink>
-            </li>
+            </li>:null}
+          {setPrikaziOdjaviSe?
+          <li className="nav-item">
+          <NavLink className="nav-link" to="/" onClick={odjaviSe} >
+           Odjavi se
+          </NavLink>  </li>:null
+        }  
            
         </ul>
         

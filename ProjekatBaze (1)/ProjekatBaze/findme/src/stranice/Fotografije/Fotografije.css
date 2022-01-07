@@ -1,0 +1,30 @@
+.gallery
+{
+    -webkit-column-count: 4;
+    -moz-column-count: 4;
+    column-count: 4;
+    -webkit-column-width: 25%;
+    -moz-column-width: 25%;
+    column-width: 25%;
+    padding: 1 12px;
+}
+.gallery .pics
+{
+    -webkit-transition: all 350ms ease;
+    transition: all 350ms ease;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+.gallery .pics:hover{
+    filter: opacity(.8);
+}
+@media(max-width:991px)
+{
+    .gallery
+{
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    
+}
+}

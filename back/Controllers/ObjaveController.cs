@@ -8,7 +8,10 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System;
-
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using System.Linq;
 namespace back
 {
     [Route("api/[controller]")]
@@ -16,9 +19,11 @@ namespace back
     public class ObjaveController:ControllerBase
     {
         private readonly IConnectionMultiplexer _redis;
-        public ObjaveController(IConnectionMultiplexer redis)
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public ObjaveController(IConnectionMultiplexer redis,IWebHostEnvironment env)
         {
             this._redis = redis;
+            this. _hostEnvironment=env;
 
         }
         [Route("subscribe")]
@@ -155,7 +160,7 @@ namespace back
             string komentarLajkoviKey = $"komentar:{komentarId}:lajkovi";
             long userId = (long)await db.StringGetAsync(username);
             await db.ListLeftPushAsync(komentarLajkoviKey, userId);
-            long autorKomentaraId = (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");
+            long autorKomentaraId = (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");         
             long objavaId = (long)await db.HashGetAsync($"komentar:{komentarId}", "objavaId");
             //long objavaAutorId = (long)await db.HashGetAsync($"objava:{objavaId}", "author");
 
@@ -209,6 +214,146 @@ namespace back
             return Ok(objava);
 
 
+        }
+
+        [Route("IzmeniSliku/{korIme}")]
+        [HttpPut]
+        public async Task<IActionResult> IzmeniSliku(string korIme,[FromForm]IFormFile profilnaFIle)
+        {
+           
+            var db = _redis.GetDatabase();
+            User user= (User) await this.GetUsergetUserByUserName(korIme);
+            
+            int userId=(int) await db.StringGetAsync($"username:{user.Username}");
+            string key = $"user:{userId}";
+            if(user==null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+              
+                var slikaPom= await SacuvajSliku(profilnaFIle);
+                string profilna=String.Format("{0}://{1}{2}/Images/{3}",Request.Scheme,Request.Host,Request.PathBase,slikaPom);
+                await db.HashSetAsync(key,new HashEntry[]{
+                new HashEntry("ProfilnaSrc", profilna),
+              });
+                
+               return Ok();
+
+            }
+           
+           
+        }
+
+        [NonAction]
+        public async Task<string> SacuvajSliku(IFormFile slika)
+        {
+            string imeSlike= new String (Path.GetFileNameWithoutExtension(slika.FileName).Take(10).ToArray()).Replace(' ','-');
+            
+            imeSlike=imeSlike+DateTime.Now.ToString("yymmssfff")+Path.GetExtension(slika.FileName);
+            var slikaPath= Path.Combine(_hostEnvironment.ContentRootPath,"Images",imeSlike);
+            using (var fileStream=new FileStream(slikaPath,FileMode.Create))
+            {
+                await slika.CopyToAsync(fileStream);
+            }
+            return imeSlike;
+
+        }
+
+        [Route("IzmeniNaslovnuSliku/{korIme}")]
+        [HttpPut]
+        public async Task<IActionResult> IzmeniNaslovnuSliku(string korIme,[FromForm]IFormFile naslovnaFIle)
+        {
+           
+            var db = _redis.GetDatabase();
+            User user= (User) await this.GetUsergetUserByUserName(korIme);
+            
+            int userId=(int) await db.StringGetAsync($"username:{user.Username}");
+            string key = $"user:{userId}";
+            if(user==null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+              
+                var slikaPom= await SacuvajSliku(naslovnaFIle);
+                string naslovna=String.Format("{0}://{1}{2}/Images/{3}",Request.Scheme,Request.Host,Request.PathBase,slikaPom);
+                await db.HashSetAsync(key,new HashEntry[]{
+                  new HashEntry("NaslovnaSrc", naslovna),
+              });
+             
+                
+               return Ok();
+
+            }  
+        }
+        [Route("DodajNovuSliku/{korIme}")]
+        [HttpPut]
+        public async Task<IActionResult> DodajNovuSliku(string korIme,[FromForm]IFormFile slikaFile)
+        {
+           
+            var db = _redis.GetDatabase();
+            User user= (User) await this.GetUsergetUserByUserName(korIme);
+            int userId=(int) await db.StringGetAsync($"username:{user.Username}");
+            string key = $"user:{userId}";
+            string keySlike= $"user:{userId}:slike";
+           if(user==null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+               
+                var slikaPom= await SacuvajSliku(slikaFile);
+                string slika=String.Format("{0}://{1}{2}/Images/{3}",Request.Scheme,Request.Host,Request.PathBase,slikaPom);
+                await db.ListLeftPushAsync(keySlike,slika);
+                
+               return Ok();
+
+            }  
+        }
+        [HttpGet]
+        [Route("PreuzmiSlike/{username}")]
+        public async Task<List<string>> PreuzmiSlike(string username)
+        {
+
+                var db = _redis.GetDatabase();
+                int userId=(int) await db.StringGetAsync($"username:{username}");
+                string keySlike=$"user:{userId}:slike";
+                User user=new User();
+                user.Fotografije=((await db.ListRangeAsync(keySlike, 0,-1)).ToStringArray()).ToList();
+                return user.Fotografije;
+            
+           
+        }
+
+            
+
+       
+        [HttpGet]
+        [Route("getUserByUserName/{username}")]
+        public async Task<User> GetUsergetUserByUserName(string username)
+        {
+
+                var db = _redis.GetDatabase();
+               
+                int userId=(int) await db.StringGetAsync($"username:{username}");
+                 string keySlike= $"user:{userId}:slike";
+                string key = $"user:{userId}";
+                User user=new User();
+                user.Id = userId;
+                user.Username = await db.HashGetAsync(key, "username");
+                user.Password= await db.HashGetAsync(key, "password");
+                user.isOnline= (bool)await db.HashGetAsync(key, "isOnline");
+                user.Email=await db.HashGetAsync(key, "username");
+                user.ProfilnaSrc=await db.HashGetAsync(key, "ProfilnaSrc");
+                user.NaslovnaSrc=await db.HashGetAsync(key, "NaslovnaSrc");
+                user.Fotografije=((await db.ListRangeAsync(keySlike, 0,-1)).ToStringArray()).ToList();
+                return user;
+            
+           
         }
 
     }

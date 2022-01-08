@@ -28,5 +28,13 @@ namespace back.entities
 
         public int GodineDo { get; set; }
 
+        public string ProfilnaSrc { get; set; }
+
+        public string NaslovnaSrc { get; set; }
+
+        public string Opis { get; set; }
+
+        public string TipVeze { get; set; }
+
     }
 }

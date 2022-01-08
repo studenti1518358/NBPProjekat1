@@ -31,7 +31,7 @@ function App() {
         <Route path='/UspesnoRegistrovanje' element={<UspesnoRegistrovanje/>}/>
         <Route path='/Profil' element={<Profil/>}/>
         <Route path='/PocetnaStrana' element={<Novosti/>}/>
-        <Route path='/Predlozi' element={<Predlozi/>}/>
+        <Route path='/Predlozi/*' element={<Predlozi/>}/>
         <Route path='/Chat' element={<Chat/>}/>
         </Routes>
       

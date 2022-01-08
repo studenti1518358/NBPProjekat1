@@ -40,6 +40,7 @@ export default function PrijaviSe() {
       const body=await response1.json()
       console.log(body)
       dispatch({type:'SET_USER',payload:body});
+      localStorage.setItem("username",body.username)
       setRedirect(true)
 
         

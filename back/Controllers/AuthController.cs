@@ -103,7 +103,7 @@ namespace back
             {
                 return Unauthorized();
             }
-            return Ok();
+           // return Ok();
         }
 
 
@@ -143,7 +143,7 @@ namespace back
             //upisuvanje osnovnih podataka o korisniku
             var userInfo = user.OsnovneInformacije;
             var statementText = new StringBuilder();
-            statementText.Append("CREATE (user:User {username: $username,password:$password,id:$id,email:$email,ime:$ime,prezime:$prezime,godine:$godine,mesto:$mesto,bracniStatus:$bracniStatus,zanimanje:$zanimanje,pol:$pol,godineOd:$godineOd,godineDo:$godineDo,polPartnera:$polPartnera})");
+            statementText.Append("CREATE (user:User {username: $username,password:$password,id:$id,email:$email,ime:$ime,prezime:$prezime,godine:$godine,mesto:$mesto,bracniStatus:$bracniStatus,zanimanje:$zanimanje,pol:$pol,godineOd:$godineOd,godineDo:$godineDo,polPartnera:$polPartnera,tipVeze:$tipVeze})");
             var statementParameters = new Dictionary<string, object>
         {
             {"username", userInfo.Username },
@@ -159,7 +159,8 @@ namespace back
                 {"pol",userInfo.Pol},
                 {"godineOd",user.TrazimKodPartnera.GodineOd },
                 {"godineDo",user.TrazimKodPartnera.GodineDo },
-                {"polPartnera",user.TrazimKodPartnera.Pol }
+                {"polPartnera",user.TrazimKodPartnera.Pol },
+                {"tipVeze",user.TrazimKodPartnera.TipVeze }
 
         };
             var session = this._neo4jDriver.AsyncSession();

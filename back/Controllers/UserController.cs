@@ -95,7 +95,7 @@ namespace back
         public async Task<IActionResult> nadjiPartnera(string username)
         {
             var statementText = new StringBuilder();
-            statementText.Append($"MATCH (n:User {{username:$username}}) WITH  n  MATCH (n:User)-[:INTERESUJEME | TRAZIM | ZIVIM]->(i)<-[:INTERESUJEME | POSEDUJE | ZIVIM]-(m:User) WITH distinct m, count(i) as x RETURN properties(m) ORDER by x desc");
+            statementText.Append($"MATCH (n:User {{username:$username}}) WITH  n  MATCH (n:User)-[:INTERESUJEME | TRAZIM | ZIVIM]->(i)<-[:INTERESUJEME | POSEDUJE | ZIVIM]-(m:User) WHERE m.username<>$username WITH distinct m, count(i) as x RETURN properties(m) ORDER by x desc");
             var statementParameters = new Dictionary<string, object>
         {
             {"username", username }
@@ -110,12 +110,22 @@ namespace back
                 var rez = await result;
                 var records = await rez.ToListAsync();
                 //return JsonConvert.SerializeObject(record[0]);
-                return records.Select(x=>x[0]);
+                return records.Select(x=>JsonConvert.SerializeObject(x[0]));
 
             });
             Console.WriteLine(result.ToString());
+            var users = result.Select(x => JsonConvert.DeserializeObject<Neo4jUser>(x)).ToList();
+            var db = _redis.GetDatabase();
+            users.ForEach(async user =>
+            {
+                user.ProfilnaSrc = await db.HashGetAsync($"user:{user.Id}", "ProfilnaSrc");
+                Console.WriteLine(user.ProfilnaSrc);
+                Console.WriteLine($"user:{user.Id}");
+            });
             // return Ok(JsonConvert.DeserializeObject<Neo4jUser>(result));
-            return Ok(result);
+           // Console.WriteLine()
+           users.ForEach(user=> { Console.WriteLine(user.ProfilnaSrc); Console.WriteLine(user.Id); });
+            return Ok(users);
 
 
         }

@@ -1,24 +1,26 @@
 import React from 'react'
 import './Predlog.css'
-export default function Predlog() {
+import {NavLink} from 'react-router-dom'
+export default function Predlog({korisnik,indeks}) {
+    const sledeci=indeks+1;
     return (
         <div className='predlog'>
             <div className='predlogDivImg'>
              <img
                 className="predlogImg"
-                src="slike/prof2.jpg"
+                src={korisnik.profilnaSrc}
                 alt=""
               />
-             <label>Marko Miljanic, 25</label> 
+             <label>{korisnik.ime+" "+korisnik.prezime+", "+korisnik.godine}</label> 
              
             </div>
             <div className='divPredlogOpis'>
                 <div className='divPredlogOpisPom'>
-                    <label>Mesto stanovanja:Niš</label>
-                    <label>Pol:Muški</label>
-                    <label>Zainteresovan za pol:Ženski</label>
-                    <label>Status veze:Slobodan</label>
-                    <label>Traži:Brak</label>
+                    <label>{"Mesto stanovanja "+korisnik.mesto}</label>
+                    <label>{"Pol: "+korisnik.pol}</label>
+                    <label>{'Zainteresovan za pol: '+korisnik.polPartnera}</label>
+                    <label>{"Status veze: "+korisnik.bracniStatus}</label>
+                    <label>{"Traži: "+korisnik.tipVeze}</label>
                 </div>
 
                <div className='divPredlogOpisPom'>                 
@@ -38,12 +40,15 @@ export default function Predlog() {
                >
                 Poseti profil          
                </button>
+               <NavLink to={"/Predlozi/predlog"+sledeci}>
                <button
                 className='btnPocetna'               
                >
                 Preskoči          
                </button>
+               </NavLink>
                 </div>
+               
             </div>
         </div>
     )

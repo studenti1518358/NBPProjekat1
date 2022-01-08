@@ -50,9 +50,20 @@ const Navbar = () => {
 
         }
   }, [])
-  const odjaviSe=()=>{
+  const odjaviSe=async ()=>{
+
+    localStorage.setItem("profilna",null)
+
+    const response=await fetch('http://localhost:5000/api/Auth/logoutUser',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            credentials:'include'
+           
+           
+          });
           
     localStorage.clear()
+   
    
     window.location.reload()
 }
@@ -93,7 +104,7 @@ const Navbar = () => {
             </li>
 
             <li className="nav-item active">
-              <NavLink className="nav-link" to="/Predlozi" >
+              <NavLink className="nav-link" to="/Predlozi/predlog0" >
                Predlozi
               </NavLink>
             </li>
@@ -111,7 +122,7 @@ const Navbar = () => {
             </li>:null}
           {setPrikaziOdjaviSe?
           <li className="nav-item">
-          <NavLink className="nav-link" to="/" onClick={odjaviSe} >
+          <NavLink className="nav-link" to="/PrijaviSe" onClick={odjaviSe} >
            Odjavi se
           </NavLink>  </li>:null
         }  

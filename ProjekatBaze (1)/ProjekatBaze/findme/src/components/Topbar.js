@@ -13,6 +13,9 @@ export default function Topbar() {
      setProfilnaSrc(localStorage.getItem("profilna"))
     
   },[])
+  const [isLogged,setIsLogged]=useState(true)
+ 
+ 
   return (
     <div className="topbarContainer">
       
@@ -50,9 +53,9 @@ export default function Topbar() {
             <span className="topbarIconBadge">2</span>
             </NavLink>
           </div>
-          
+        
         </div>
-        <img src={profilnaSrc} alt="" className="topbarImg" onClick={handleHistory1}/>
+       {isLogged && <img  src={profilnaSrc} alt="" className="topbarImg" onClick={handleHistory1}/>}
       </div>
     </div>
   )

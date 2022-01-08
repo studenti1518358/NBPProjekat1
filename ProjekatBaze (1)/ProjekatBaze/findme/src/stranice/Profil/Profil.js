@@ -10,6 +10,10 @@ export default function Profile() {
   {
     navigate("/Fotografije")
   }
+  const handleHistory2=()=>
+  {
+    navigate("/Informacije")
+  }
   const [prikazFormeZaIzborSlike,setPrikazFormeZaIzborSlike]=useState(false)
   const [prikazFormeZaIzborSlikeNaslovna,setPrikazFormeZaIzborSlikeNaslovna]=useState(false)
   const [prikazDugmetaIzmeniSliku,setPrikazDugmetaIzmeniSliku]=useState(true)
@@ -22,30 +26,24 @@ export default function Profile() {
   const [naslovnaFile,setNaslovnaFile]=useState(null)
   const [korisnickoIme,setKorisnickoIme]=useState("")
   useEffect(() => {
-     
-    
            
             fetch("http://localhost:5000/api/Auth/getUser", {
               headers:{'Content-Type':'application/json'},
               credentials:'include'
             }).then(korisnik=>{
-    
                korisnik.json().then(podaci=>{
                 setKorisnickoIme(podaci.username)
                 if(podaci.profilnaSrc!=null)
                    {
                     setProfilnaSrc(podaci.profilnaSrc)
-                   }
-                  
+                   } 
                    if(podaci.naslovnaSrc!=null)
                    {
                     setNaslovnaSrc(podaci.naslovnaSrc)
                    }
-                 
-                  
                    localStorage.setItem("profilna",podaci.profilnaSrc)
                    localStorage.setItem("username",podaci.username)
-                                    
+                
                })
           })
   },[])
@@ -156,8 +154,7 @@ export default function Profile() {
           <div className="profileRightBottom">
            <Share/>
            <div className='divBtnsProfil'>
-
-           <button className="btnProfil" onClick={handleHistory1}>
+           <button className="btnProfil" onClick={handleHistory2}>
              Informacije
            </button>
            <button className="btnProfil" onClick={handleHistory1}>

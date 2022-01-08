@@ -64,12 +64,15 @@ namespace back
             string userObjaveKey = $"user:{authorId}:objave";
             await db.ListLeftPushAsync(userObjaveKey, objavaId);
             string objavaKey = $"objava:{objavaId}";
+            string datum= DateTime.Now.ToString("MM/dd/yyyy");
+            
             await db.HashSetAsync(objavaKey, new HashEntry[]
             {
                 new HashEntry("id",objavaId),
                 new HashEntry("author",authorId),
-                new HashEntry("date",objava.Date),
-                new HashEntry("tekst",objava.Text)
+                new HashEntry("date", datum),
+                new HashEntry("tekst",objava.Text),
+                new HashEntry("slika",objava.Slika)
             });
          var followers=await db.SetMembersAsync($"user:{authorId}:followers");
           foreach (RedisValue follower in followers)
@@ -190,9 +193,10 @@ namespace back
             string objavaKey = $"objava:{objavaId}";
             //
             objava.Author = await db.HashGetAsync(objavaKey, "author");
-            objava.Date =(double) await db.HashGetAsync(objavaKey, "date");
-            objava.Text = await db.HashGetAsync(objavaKey, "text");
-
+            objava.Date = await db.HashGetAsync(objavaKey, "date");
+            objava.Text = await db.HashGetAsync(objavaKey, "tekst");
+            objava.Slika = await db.HashGetAsync(objavaKey, "slika");
+         
             var komentariIds = await db.ListRangeAsync($"objava:{objavaId}:komentari", 0, -1);
             List<Comment> komentari = new List<Comment>();
             foreach (var komentarId in komentariIds)
@@ -310,7 +314,7 @@ namespace back
                 string slika=String.Format("{0}://{1}{2}/Images/{3}",Request.Scheme,Request.Host,Request.PathBase,slikaPom);
                 await db.ListLeftPushAsync(keySlike,slika);
                 
-               return Ok();
+               return Ok(slika);
 
             }  
         }

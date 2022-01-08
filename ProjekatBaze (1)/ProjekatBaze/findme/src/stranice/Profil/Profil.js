@@ -45,7 +45,7 @@ export default function Profile() {
                   
                    localStorage.setItem("profilna",podaci.profilnaSrc)
                    localStorage.setItem("username",podaci.username)
-                   console.log(podaci)                   
+                                    
                })
           })
   },[])
@@ -155,9 +155,21 @@ export default function Profile() {
           </div>
           <div className="profileRightBottom">
            <Share/>
+           <div className='divBtnsProfil'>
+
            <button className="btnProfil" onClick={handleHistory1}>
-             Fotografije korisnika
+             Informacije
            </button>
+           <button className="btnProfil" onClick={handleHistory1}>
+             Fotografije
+           </button>
+           <button className="btnProfil" onClick={handleHistory1}>
+             Pratioci
+           </button>
+           <button className="btnProfil" onClick={handleHistory1}>
+             Prati
+           </button>
+           </div>
            <Post/>
           </div>
         </div>

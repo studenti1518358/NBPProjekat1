@@ -8,6 +8,10 @@ export default function Share() {
     const [slikaSrc,setSlikaSrc]=useState()
     const [slikaFile,setSlikaFile]=useState()
     const [korisnickoIme,setKorisnickoIme]=useState("")
+    const [opis,setOpis]=useState("")
+    const [status,setStatus]=useState("")
+    const [slika,setSlika]=useState("")
+
 
     const izmeniSliku=(e)=>{
       if(e.target.files && e.target.files[0])
@@ -21,7 +25,6 @@ export default function Share() {
         reader.readAsDataURL(imgFile)
         setSlikaFile(imgFile)
         
-       // setProfilnaIme(imgFile.name)
       }
     }
     const podeli=()=>{
@@ -30,14 +33,49 @@ export default function Share() {
       const formData=new FormData()
        formData.append("slikaFile",slikaFile)
        axios.put("http://localhost:5000/api/Objave/DodajNovuSliku/"+localStorage.getItem("username"),formData).then(p=>{  
-         
-        if(p!=null)
+        
+       if(p!=null)
         {
          
          setPrikazFormeZaIzborSlike(false) 
+         
         }
+        setSlika(p.data)
       })
+      fetch("http://localhost:5000/api/Objave/objavi",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(
+          {
+            author:localStorage.getItem("username"),
+            date:"",
+            text:opis,
+            slika:slika
+          
+          
+          }
+        )
+      })
+      console.log(opis)
+      console.log(slika)
+      console.log(localStorage.getItem("username"))
     } 
+    else
+    {
+      fetch("http://localhost:5000/api/Objave/objavi",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(
+          {
+            text:status,
+            slika:null,
+            date:"",
+            author:localStorage.getItem("username")
+          }
+        )
+      })
+      
+    }
 
     }
   return (
@@ -49,15 +87,23 @@ export default function Share() {
             {prikazFormeZaIzborSlike?
             <img src={slikaSrc} className='shareSlika' alt=""/> :null
             }
-             {prikazFormeZaIzborSlike?null: <input
+            {prikazFormeZaIzborSlike?null: <input
             placeholder="Šta ti je na umu?"
             className="shareInput"
+            onChange={e=>setStatus(e.target.value)}
           />}
           {prikazFormeZaIzborSlike? 
            <input type='file'
          placeholder='Izaberi sliku'
          id='profilnaSlika'
           className='form-control-file chooseFile' onChange={izmeniSliku}/>:null}
+          {prikazFormeZaIzborSlike? 
+           <input type='text'
+         placeholder='Unesite opis'
+         id='opisSlike'
+         className="shareInput" 
+         onChange={e=>setOpis(e.target.value)}
+         />:null}
           </div>
 
         </div>

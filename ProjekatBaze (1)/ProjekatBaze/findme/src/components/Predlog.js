@@ -1,8 +1,16 @@
 import React from 'react'
 import './Predlog.css'
 import {NavLink} from 'react-router-dom'
+import {Confirm} from 'react-st-modal'
 export default function Predlog({korisnik,indeks}) {
     const sledeci=indeks+1;
+    const zaprati=async()=>{
+        const response=await fetch("http://localhost:5000/api/Objave/subscribe?usernamePub="+korisnik.username+"&usernameSub="+localStorage.getItem("username"))
+        if(response.status===200)
+        {
+            await Confirm( 'Zapratili ste korisnika '+korisnik.username,'Pratite novu osobu!');
+        }
+    }
     return (
         <div className='predlog'>
             <div className='predlogDivImg'>
@@ -31,9 +39,9 @@ export default function Predlog({korisnik,indeks}) {
                 </div> 
                 <div className='divPredlogDugmici'>
                 <button
-                className='btnPocetna'
+                className='btnPocetna' onClick={zaprati}
                  >
-                 Pošalji zahtev
+                 Zaprati
                 </button>
                 <button
                 className='btnPocetna'               

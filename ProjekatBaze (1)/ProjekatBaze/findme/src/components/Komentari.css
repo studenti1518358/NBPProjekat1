@@ -1,0 +1,44 @@
+.komentariHeder{
+    
+}
+.commentAvatar{
+    height:45px !important;
+    width:45px !important;
+    
+}
+.komentar{
+    font-size: medium;
+}
+.commentBox{
+    width:60%;
+    display: block;
+    margin-left: 0px !important;
+    padding-left: 0px !important;
+    align-self: flex-start;
+    
+}
+.formaKoment{
+    margin-left: 0px !important;
+    padding-left: 0px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: flex-start;
+}
+
+.zatvoriKomentare{
+    color:gray;
+    font-size: small;
+    padding-top: 15px;
+}
+.commentLikeLabel{
+    font-size: small;
+    font-style: italic;
+    margin-right: 10px;
+    cursor:pointer;
+}
+.malaLabela{
+    font-size: small;
+    margin-left: 7px;
+    font-style: bold;
+}

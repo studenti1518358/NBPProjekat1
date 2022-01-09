@@ -15,7 +15,7 @@ namespace back.entities
 
         public string AutorSrc { get; set; }
 
-        public double Date { get; set; }
+        public string Date { get; set; }
 
         public string Text { get; set; }
 

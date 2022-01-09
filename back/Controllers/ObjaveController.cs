@@ -141,14 +141,14 @@ namespace back
         {
             var db = _redis.GetDatabase();
 
-            if (await db.KeyExistsAsync($"username:{komentar.AutorUsername}") == false || await db.KeyExistsAsync($"objava:{komentar.ObjavaId}"))
+            if (await db.KeyExistsAsync($"username:{komentar.AutorUsername}") == false || await db.KeyExistsAsync($"objava:{komentar.ObjavaId}")==false)
             {
                 return BadRequest("Author username or objavaId is non-existing");
             }
 
             long komentarId = await db.StringIncrementAsync("totalKomentari");
             string komentariKey = $"objava:{komentar.ObjavaId}:komentari";
-            await db.ListLeftPushAsync(komentariKey, komentarId);
+            await db.ListRightPushAsync(komentariKey, komentarId);
             string komentarKey = $"komentar:{komentarId}";
             long autorId = (long)await db.StringGetAsync($"username:{komentar.AutorUsername}");
             string autorSrc = await db.HashGetAsync($"user:{autorId}", "ProfilnaSrc");
@@ -197,7 +197,7 @@ namespace back
             string notificationKey = $"user:{objavaAutorId}:notifications";
 
             Notification newNotification = new Notification();
-            newNotification.Date = DateTime.Now.Ticks;
+            newNotification.Date = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
             newNotification.ObjectId =objavaId;
             newNotification.Text = $"Korisnik: {lajk.Username} je lajkovao vasu objavu";
             newNotification.Type = "lajk";
@@ -226,7 +226,7 @@ namespace back
             string notificationKey = $"user:{autorKomentaraId}:notifications";
 
             Notification newNotification = new Notification();
-            newNotification.Date = DateTime.Now.Ticks;
+            newNotification.Date = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
             newNotification.ObjectId = objavaId;
             newNotification.Text = $"Korisnik: {lajk.Username} je lajkovao vas komentar";
             newNotification.Type = "lajk";
@@ -299,13 +299,13 @@ namespace back
             foreach (var komentarId in komentariIds)
             {
                 Comment newKomentar = new Comment();
-                newKomentar.Date = (long)await db.HashGetAsync($"komentar:{komentarId}", "date");
+                newKomentar.Date = await db.HashGetAsync($"komentar:{komentarId}", "date");
                 newKomentar.Text = await db.HashGetAsync($"komentar:{komentarId}", "text");
                 newKomentar.ObjavaId = (long)await db.HashGetAsync($"komentar:{komentarId}", "objavaId");
                 newKomentar.AuthorId= (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");
                 newKomentar.Id =(long) komentarId;
-                newKomentar.AuthorUsername= await db.HashGetAsync(objavaKey, "authorUsername");
-                newKomentar.AutorSrc= await db.HashGetAsync(objavaKey, "authorSrc");
+                newKomentar.AuthorUsername= await db.HashGetAsync($"komentar:{komentarId}", "authorUsername");
+                newKomentar.AutorSrc= await db.HashGetAsync($"komentar:{komentarId}", "authorSrc");
                 var likes = (await db.ListRangeAsync($"komentar:{komentarId}:lajkovi", 0, -1)).ToStringArray();
                 Like[] Lajkovi = new Like[likes.Length];
                 int index = 0;

@@ -2,14 +2,17 @@ import "./Post.css"
 import { useState,useEffect } from "react"
 import { CustomDialog, useDialog } from 'react-st-modal';
 import LikesDialog from "./likesDialog";
+import CommentSection from "./CommentSection";
 
 
 export default function Post({post}) {
   const [like,setLike] = useState(0)
   const [isLiked,setIsLiked] = useState(false)
   const [likes,setLikes]=useState([])
+  const [commentsNum,setCommentsNum]=useState(0)
   const [profilnaSrc,setProfilnaSrc]=useState('/slike/profil.jpg')
   const [slika,setSlika]=useState('/slike/priroda.jpg')
+  const [showComments,setShowComments]=useState(false)
   const isStatus=!post.slikaSrc?true:false
   //setProfilnaSrc(localStorage.getItem("profilna"))
   const likeHandler =async()=>{
@@ -44,6 +47,7 @@ export default function Post({post}) {
     setLike(post.likes.length);
     setIsLiked(false)
     setLikes(post.likes)
+    setCommentsNum(post.comments.length)
     for(let i=0;i<post.likes.length;i++){
       if(post.likes[i].username===localStorage.getItem("username"))
              setIsLiked(true)
@@ -86,20 +90,20 @@ export default function Post({post}) {
           </div>
           <div className="postBottomRight">
            
-            <span  className="postCommentText">{like} comments</span>
+            <span  className="postCommentText" onClick={()=>setShowComments(true)}>{commentsNum} comments</span>
             
             
            
-        <input placeholder="Komentarisi" className='commentInput'></input>
-            <button className='commentButton'>Comment</button>
-           
+        
             
            
 
           </div>
+       
          
           
         </div>
+        {showComments && <CommentSection komentari={post.comments} postId={post.id} setShow={setShowComments} setCommentsNum={setCommentsNum} />}
         </div>
     </div>
   )

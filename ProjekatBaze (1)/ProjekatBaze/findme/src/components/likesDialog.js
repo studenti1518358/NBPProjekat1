@@ -10,7 +10,7 @@ export default function LikesDialog({likes}) {
 
   return (
     <div>
-        <h4>Osobe kojima se svidja ova objava:</h4>
+        <h4>Osobe kojima se ovo svidja:</h4>
        {likes.map((like,index)=>{
            const username=like.username===localStorage.getItem("username")?'Vi':like.username
           return (<div><img

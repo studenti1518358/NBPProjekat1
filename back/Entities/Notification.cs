@@ -9,7 +9,7 @@ namespace back.entities
         public long ObjectId { get; set; }
         public string Text { get; set; }
 
-        public double Date { get; set; }
+        public string Date { get; set; }
 
 
         //comment,like or follow

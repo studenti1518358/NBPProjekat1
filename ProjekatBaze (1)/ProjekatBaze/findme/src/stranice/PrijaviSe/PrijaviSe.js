@@ -29,7 +29,7 @@ export default function PrijaviSe() {
        
       })
       console.log(response)
-      if(response.status==200){
+      if(response.status===200){
         const response1=await fetch('http://localhost:5000/api/Auth/getUser',{
          
       headers:{'Content-Type':'application/json'},
@@ -41,6 +41,21 @@ export default function PrijaviSe() {
       console.log(body)
       dispatch({type:'SET_USER',payload:body});
       localStorage.setItem("username",body.username)
+      
+      fetch("http://localhost:5000/api/Auth/getUser", {
+        headers:{'Content-Type':'application/json'},
+        credentials:'include'
+      }).then(korisnik=>{
+
+         korisnik.json().then(podaci=>{
+         
+           
+            
+             localStorage.setItem("profilna",podaci.profilnaSrc)
+             localStorage.setItem("username",podaci.username)
+                              
+         })
+    })
       setRedirect(true)
 
         

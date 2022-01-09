@@ -24,24 +24,37 @@ export default function Share() {
         }
         reader.readAsDataURL(imgFile)
         setSlikaFile(imgFile)
+        console.log(imgFile)
         
       }
     }
-    const podeli=()=>{
+    const podeli=async ()=>{
       if(prikazFormeZaIzborSlike)
       {
       const formData=new FormData()
        formData.append("slikaFile",slikaFile)
-       axios.put("http://localhost:5000/api/Objave/DodajNovuSliku/"+localStorage.getItem("username"),formData).then(p=>{  
+       console.log(slikaFile)
+       var slicica=""
+      await axios.put("http://localhost:5000/api/Objave/DodajNovuSliku/"+localStorage.getItem("username"),formData).then(p=>{  
         
        if(p!=null)
         {
          
          setPrikazFormeZaIzborSlike(false) 
+         console.log(p.data)
          
         }
-        setSlika(p.data)
+       console.log(p.data)
+       setSlika(p.data)
+       console.log(slika)
+       console.log(p.data)
+       slicica=p.data
+       console.log(slicica)
       })
+      
+      console.log(opis)
+      console.log(slika)
+      setSlika(slicica)
       fetch("http://localhost:5000/api/Objave/objavi",{
         method:"POST",
         headers:{'Content-Type':'application/json'},
@@ -50,7 +63,7 @@ export default function Share() {
             author:localStorage.getItem("username"),
             date:"",
             text:opis,
-            slika:slika
+            slika:slicica
           
           
           }
@@ -76,6 +89,7 @@ export default function Share() {
       })
       
     }
+    window.location.reload()
 
     }
   return (

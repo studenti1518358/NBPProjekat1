@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Linq;
 namespace back
 {
+	
     [Route("api/[controller]")]
     [ApiController]
     public class ObjaveController:ControllerBase
@@ -47,6 +48,52 @@ namespace back
 
 
         }
+		[Route("getFollowers/{username}")]
+		[HttpGet]
+		public async Task<IActionResult> GetFollowers(string username)
+		{
+			 var db = _redis.GetDatabase();
+			 if (await db.KeyExistsAsync($"username:{username}") == false)
+            {
+                return BadRequest(" username is non-existing");
+            }
+			 List<Tuple<string,string>> pratioci=new List<Tuple<string,string>>();
+			  int id = (int)await db.StringGetAsync($"username:{username}");
+			var followers=await db.SetMembersAsync($"user:{id}:followers");
+          foreach (RedisValue follower in followers)
+            {
+                long followerId = (long)follower;
+                string followerUsername = await db.HashGetAsync($"user:{followerId}", "username");
+				string slika=await db.HashGetAsync($"user:{followerId}", "ProfilnaSrc");
+				pratioci.Add(Tuple.Create(followerUsername,slika));
+            }
+            return Ok(pratioci);
+			 
+		}
+		
+		[Route("getFollowing/{username}")]
+		[HttpGet]
+		public async Task<IActionResult> GetFollowing(string username)
+		{
+			 var db = _redis.GetDatabase();
+			 if (await db.KeyExistsAsync($"username:{username}") == false)
+            {
+                return BadRequest("username is non-existing");
+            }
+			 List<Tuple<string,string>> pratioci=new List<Tuple<string,string>>();
+			  int id = (int)await db.StringGetAsync($"username:{username}");
+			var followers=await db.SetMembersAsync($"user:{id}:following");
+          foreach (RedisValue follower in followers)
+            {
+                long followerId = (long)follower;
+                string followerUsername = await db.HashGetAsync($"user:{followerId}", "username");
+				string slika=await db.HashGetAsync($"user:{followerId}", "ProfilnaSrc");
+				pratioci.Add(Tuple.Create(followerUsername,slika));
+            }
+            return Ok(pratioci);
+			 
+		}
+	     
 
         [Route("objavi")]
         [HttpPost]
@@ -65,6 +112,7 @@ namespace back
             await db.ListLeftPushAsync(userObjaveKey, objavaId);
             string objavaKey = $"objava:{objavaId}";
             string datum= DateTime.Now.ToString("MM/dd/yyyy");
+			 string authorSrc = await db.HashGetAsync($"user:{authorId}", "ProfilnaSrc");
             
             await db.HashSetAsync(objavaKey, new HashEntry[]
             {
@@ -72,7 +120,10 @@ namespace back
                 new HashEntry("author",authorId),
                 new HashEntry("date", datum),
                 new HashEntry("tekst",objava.Text),
-                new HashEntry("slika",objava.Slika)
+                new HashEntry("slikaSrc",objava.Slika),
+				 new HashEntry("authorUsername",objava.Author),
+				 new HashEntry("authorSrc",authorSrc)
+				
             });
          var followers=await db.SetMembersAsync($"user:{authorId}:followers");
           foreach (RedisValue follower in followers)
@@ -99,12 +150,15 @@ namespace back
             string komentariKey = $"objava:{komentar.ObjavaId}:komentari";
             await db.ListLeftPushAsync(komentariKey, komentarId);
             string komentarKey = $"komentar:{komentarId}";
-            long autorId = (long)await db.StringGetAsync(komentar.AutorUsername);
+            long autorId = (long)await db.StringGetAsync($"username:{komentar.AutorUsername}");
+            string autorSrc = await db.HashGetAsync($"user:{autorId}", "ProfilnaSrc");
             await db.HashSetAsync(komentarKey, new HashEntry[]
             {
                 new HashEntry("text",komentar.Text),
                 new HashEntry("date",komentar.Date),
                 new HashEntry("autorId",autorId),
+                new HashEntry("authorUsername",komentar.AutorUsername),
+                 new HashEntry("authorSrc",autorSrc),
                 new HashEntry("objavaId",komentar.ObjavaId)
             });
 
@@ -121,19 +175,22 @@ namespace back
 
             return Ok(komentarId);
         }
+          
       [Route("lajkujObjavu")]
-      [HttpGet]
-      public async Task<IActionResult> LajkujObjavu(long objavaId,string username)
+      [HttpPost]
+      public async Task<IActionResult> LajkujObjavu(long objavaId,[FromBody]Like lajk)
         {
             var db = _redis.GetDatabase();
-            if (await db.KeyExistsAsync($"username:{username}") == false)
+            if (await db.KeyExistsAsync($"username:{lajk.Username}") == false)
             {
                 return BadRequest(" username is non-existing");
             }
 
             string objavaLajkoviKey = $"objava:{objavaId}:lajkovi";
-            long userId= (long)await db.StringGetAsync(username);
-            await db.ListLeftPushAsync(objavaLajkoviKey, userId);
+            long userId= (long)await db.StringGetAsync($"username:{lajk.Username}");
+
+            
+            await db.ListLeftPushAsync(objavaLajkoviKey, JsonConvert.SerializeObject(lajk));
 
             long objavaAutorId = (long)await db.HashGetAsync($"objava:{objavaId}", "author");
 
@@ -142,28 +199,27 @@ namespace back
             Notification newNotification = new Notification();
             newNotification.Date = DateTime.Now.Ticks;
             newNotification.ObjectId =objavaId;
-            newNotification.Text = $"Korisnik: {username} je lajkovao vasu objavu";
+            newNotification.Text = $"Korisnik: {lajk.Username} je lajkovao vasu objavu";
             newNotification.Type = "lajk";
             await db.ListLeftPushAsync(notificationKey, JsonConvert.SerializeObject(newNotification));
 
             return Ok();
 
         }
-
+         [HttpPost]
         [Route("lajkujKomentar")]
-        [HttpGet]
-        public async Task<IActionResult> Lajkujkomentar(long komentarId, string username)
+        public async Task<IActionResult> Lajkujkomentar(long komentarId,[FromBody] Like lajk)
         {
             var db = _redis.GetDatabase();
-            if (await db.KeyExistsAsync($"username:{username}") == false)
+            if (await db.KeyExistsAsync($"username:{lajk.Username}") == false)
             {
                 return BadRequest(" username is non-existing");
             }
 
             string komentarLajkoviKey = $"komentar:{komentarId}:lajkovi";
-            long userId = (long)await db.StringGetAsync(username);
-            await db.ListLeftPushAsync(komentarLajkoviKey, userId);
-            long autorKomentaraId = (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");         
+            long userId = (long)await db.StringGetAsync(lajk.Username);
+            await db.ListLeftPushAsync(komentarLajkoviKey, JsonConvert.SerializeObject(lajk));
+            long autorKomentaraId = (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");
             long objavaId = (long)await db.HashGetAsync($"komentar:{komentarId}", "objavaId");
             //long objavaAutorId = (long)await db.HashGetAsync($"objava:{objavaId}", "author");
 
@@ -172,7 +228,7 @@ namespace back
             Notification newNotification = new Notification();
             newNotification.Date = DateTime.Now.Ticks;
             newNotification.ObjectId = objavaId;
-            newNotification.Text = $"Korisnik: {username} je lajkovao vas komentar";
+            newNotification.Text = $"Korisnik: {lajk.Username} je lajkovao vas komentar";
             newNotification.Type = "lajk";
             await db.ListLeftPushAsync(notificationKey, JsonConvert.SerializeObject(newNotification));
 
@@ -181,22 +237,63 @@ namespace back
         }
 
         [HttpGet]
-        [Route("getObjava")]
-        public async Task<IActionResult> GetObjava(long objavaId)
+        [Route("getZid/{username}")]
+        public async Task<IActionResult> GetZid(string username)
+        {
+            var db = _redis.GetDatabase();
+            if (await db.KeyExistsAsync($"username:{username}") == false)
+            {
+                return BadRequest(" username is non-existing");
+            }
+            long userId = (long)await db.StringGetAsync($"username:{username}");
+            var objaveIds = await db.ListRangeAsync($"user:{userId}:wall", 0, -1);
+            List<Objava> objave = new List<Objava>();
+            foreach(var objavaId in objaveIds)
+            {
+                objave.Add(await GetObjava((long)objavaId));
+            }
+            return Ok(objave);
+        }
+
+        [HttpGet]
+        [Route("getObjave/{username}")]
+        public async Task<IActionResult> GetObjave(string username)
+        {
+            var db = _redis.GetDatabase();
+            if (await db.KeyExistsAsync($"username:{username}") == false)
+            {
+                return BadRequest(" username is non-existing");
+            }
+            long userId = (long)await db.StringGetAsync($"username:{username}");
+            var objaveIds = await db.ListRangeAsync($"user:{userId}:objave", 0, -1);
+            List<Objava> objave = new List<Objava>();
+            foreach (var objavaId in objaveIds)
+            {
+                objave.Add(await GetObjava((long)objavaId));
+            }
+            return Ok(objave);
+        }
+
+
+
+        private async Task<Objava> GetObjava(long objavaId)
         {
             Objava objava = new Objava();
             var db = _redis.GetDatabase();
             if (await db.KeyExistsAsync($"objava:{objavaId}") == false)
             {
-                return BadRequest("objava id is non-existing");
+                throw new Exception("objava id is non-existing");
             }
             string objavaKey = $"objava:{objavaId}";
             //
-            objava.Author = await db.HashGetAsync(objavaKey, "author");
+            objava.AuthorId =(long) await db.HashGetAsync(objavaKey, "author");
+            objava.AuthorUsername= await db.HashGetAsync(objavaKey, "authorUsername");
             objava.Date = await db.HashGetAsync(objavaKey, "date");
             objava.Text = await db.HashGetAsync(objavaKey, "tekst");
-            objava.Slika = await db.HashGetAsync(objavaKey, "slika");
-         
+            objava.AutorSrc= await db.HashGetAsync(objavaKey, "authorSrc");
+            objava.Id = objavaId;
+            objava.SlikaSrc= await db.HashGetAsync(objavaKey, "slikaSrc");
+
             var komentariIds = await db.ListRangeAsync($"objava:{objavaId}:komentari", 0, -1);
             List<Comment> komentari = new List<Comment>();
             foreach (var komentarId in komentariIds)
@@ -207,15 +304,24 @@ namespace back
                 newKomentar.ObjavaId = (long)await db.HashGetAsync($"komentar:{komentarId}", "objavaId");
                 newKomentar.AuthorId= (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");
                 newKomentar.Id =(long) komentarId;
-                var likes = await db.ListRangeAsync($"komentar:{komentarId}:lajkovi", 0, -1);
-                newKomentar.LikesIds = likes.ToStringArray();
+                newKomentar.AuthorUsername= await db.HashGetAsync(objavaKey, "authorUsername");
+                newKomentar.AutorSrc= await db.HashGetAsync(objavaKey, "authorSrc");
+                var likes = (await db.ListRangeAsync($"komentar:{komentarId}:lajkovi", 0, -1)).ToStringArray();
+                Like[] Lajkovi = new Like[likes.Length];
+                int index = 0;
+                foreach(var like in likes)
+                {
+                    Lajkovi[index++] = JsonConvert.DeserializeObject<Like>(like);
+
+                }
+                newKomentar.Likes = Lajkovi;
                 komentari.Add(newKomentar);
 
             }
             objava.Comments = komentari;
             var lajkovi = await db.ListRangeAsync($"objava:{objavaId}:lajkovi", 0, -1);
-            objava.LikesIds = lajkovi.ToStringArray();
-            return Ok(objava);
+            objava.Likes = lajkovi.ToStringArray().Select(x=>JsonConvert.DeserializeObject<Like>(x)).ToArray();
+            return objava;
 
 
         }

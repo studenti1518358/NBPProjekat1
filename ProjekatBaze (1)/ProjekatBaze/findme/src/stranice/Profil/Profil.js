@@ -25,6 +25,7 @@ export default function Profile() {
   const [naslovnaSrc,setNaslovnaSrc]=useState('/slike/profil.jpg')
   const [naslovnaFile,setNaslovnaFile]=useState(null)
   const [korisnickoIme,setKorisnickoIme]=useState("")
+  const [mojeObjave,setMojeObjave]=useState([])
   useEffect(() => {
            
             fetch("http://localhost:5000/api/Auth/getUser", {
@@ -46,6 +47,14 @@ export default function Profile() {
                 
                })
           })
+		   const getObjave=async()=>{ const objaveRes=await fetch("http://localhost:5000/api/Objave/getObjave/"+localStorage.getItem("username"))
+          console.log(objaveRes)
+          const objave=await objaveRes.json()
+       
+              setMojeObjave(objave)
+          console.log(objave)
+        }
+          getObjave();
   },[])
   const izmeniSliku=(e)=>{
     if(e.target.files && e.target.files[0])
@@ -167,7 +176,11 @@ export default function Profile() {
              Prati
            </button>
            </div>
-           <Post/>
+          {
+             mojeObjave.map((objava,index)=>{
+               return (<Post key={index} post={objava}/>)
+             })
+           }
           </div>
         </div>
       </div>

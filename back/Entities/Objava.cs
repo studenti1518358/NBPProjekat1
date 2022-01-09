@@ -6,18 +6,23 @@ namespace back.entities
 {
     public class Objava: BaseEntity
     {
-        public long Id { get; set; }
-        public string Author { get; set; }
+         public long Id { get; set; }
+        public long AuthorId { get; set; }
+
+        public string AuthorUsername { get; set; }
+
+        public string AutorSrc { get; set; }
 
         public string Date { get; set; }
 
         public string Text { get; set; }
 
-        public string[] LikesIds { get; set; }
+        public string SlikaSrc { get; set; }
 
-        public string Slika {get; set;}
+        public Like[] Likes { get; set; }
 
         public List<Comment> Comments { get; set; }
+
 
     }
 }

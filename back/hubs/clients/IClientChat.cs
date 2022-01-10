@@ -6,5 +6,6 @@ namespace back.hubs.clients
     public interface IChatClient
     {
         public Task ReceiveMessage(ChatMessage message);
+		public Task ReceiveNotification(Notification notification);
     }
 }

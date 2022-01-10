@@ -3,7 +3,7 @@ import './PrijaviSe.css'
 import {Context} from '../../context/Store'
 import loginImg from "./love.svg"
 import {Link,Navigate} from 'react-router-dom'
-export default function PrijaviSe() {
+export default function PrijaviSe({setUsernam}) {
    
     const [username,setUsername]=useState("")
     const [password,setPassword]=useState("")
@@ -40,6 +40,7 @@ export default function PrijaviSe() {
       const body=await response1.json()
       console.log(body)
       dispatch({type:'SET_USER',payload:body});
+      setUsernam(body.username)
       localStorage.setItem("username",body.username)
       
       fetch("http://localhost:5000/api/Auth/getUser", {

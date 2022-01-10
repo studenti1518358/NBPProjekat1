@@ -6,7 +6,7 @@ namespace back.entities
 {
     public class Notification : BaseEntity
     {
-        public long ObjectId { get; set; }
+        public string ObjectId { get; set; }
         public string Text { get; set; }
 
         public string Date { get; set; }

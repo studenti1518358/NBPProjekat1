@@ -12,6 +12,10 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using System.Linq;
+using back.hubs;
+using Microsoft.AspNetCore.SignalR;
+using back.hubs.clients;
+
 namespace back
 {
 	
@@ -21,10 +25,14 @@ namespace back
     {
         private readonly IConnectionMultiplexer _redis;
         private readonly IWebHostEnvironment _hostEnvironment;
-        public ObjaveController(IConnectionMultiplexer redis,IWebHostEnvironment env)
+		 private readonly IHubContext<ChatHub,IChatClient> _chatHub;
+		 private readonly IUserConnections _connections;
+        public ObjaveController(IConnectionMultiplexer redis,IWebHostEnvironment env, IHubContext<ChatHub,IChatClient> chatHub,IUserConnections connections)
         {
             this._redis = redis;
             this. _hostEnvironment=env;
+		    _chatHub = chatHub;
+            _connections = connections;
 
         }
         [Route("subscribe")]
@@ -43,6 +51,19 @@ namespace back
             string usernameSubSetKey = $"user:{idSub}:following";
             await db.SetAddAsync(usernamePubSetKey, idSub);
             await db.SetAddAsync(usernameSubSetKey, idPub);
+			
+			 Notification newNotification = new Notification();
+            newNotification.Date =DateTime.Now.ToString("MM/dd/yyyy HH:mm");
+            newNotification.ObjectId = usernameSub;
+            newNotification.Text = $"Korisnik: {usernameSub} vas je zapratio!";
+            newNotification.Type = "pracenje";
+			string notificationKey=$"user:{idPub}:notifications";
+            await db.ListLeftPushAsync(notificationKey, JsonConvert.SerializeObject(newNotification));
+            await db.StringIncrementAsync($"user:{idPub}:unreadNots");
+			
+			string connectionId = _connections.getConnectionId(usernamePub);
+            if (connectionId!="")
+            await _chatHub.Clients.Client(connectionId).ReceiveNotification(newNotification);
 
             return Ok();
 
@@ -151,6 +172,7 @@ namespace back
             await db.ListRightPushAsync(komentariKey, komentarId);
             string komentarKey = $"komentar:{komentarId}";
             long autorId = (long)await db.StringGetAsync($"username:{komentar.AutorUsername}");
+			
             string autorSrc = await db.HashGetAsync($"user:{autorId}", "ProfilnaSrc");
             await db.HashSetAsync(komentarKey, new HashEntry[]
             {
@@ -163,15 +185,21 @@ namespace back
             });
 
             long objavaAuthorId = (long)await db.HashGetAsync($"objava:{komentar.ObjavaId}", "author");
+			string authorUsername=await db.HashGetAsync($"user:{objavaAuthorId}","username");
             //long objavaAuthorId = (long)await db.StringGetAsync(objavaAutor);
             string notificationKey = $"user:{objavaAuthorId}:notifications";
 
             Notification newNotification = new Notification();
             newNotification.Date = komentar.Date;
-            newNotification.ObjectId = komentar.ObjavaId;
+            newNotification.ObjectId = komentar.ObjavaId.ToString();
             newNotification.Text = $"Korisnik: {komentar.AutorUsername} je komentarisao vasu objavu";
             newNotification.Type = "komentar";
             await db.ListLeftPushAsync(notificationKey, JsonConvert.SerializeObject(newNotification));
+			 await db.StringIncrementAsync($"user:{objavaAuthorId}:unreadNots");
+			
+			string connectionId = _connections.getConnectionId(authorUsername);
+            if (connectionId!="")
+            await _chatHub.Clients.Client(connectionId).ReceiveNotification(newNotification);
 
             return Ok(komentarId);
         }
@@ -193,15 +221,21 @@ namespace back
             await db.ListLeftPushAsync(objavaLajkoviKey, JsonConvert.SerializeObject(lajk));
 
             long objavaAutorId = (long)await db.HashGetAsync($"objava:{objavaId}", "author");
+			string objavaAutorUsername=await db.HashGetAsync($"user:{objavaAutorId}","username");
 
             string notificationKey = $"user:{objavaAutorId}:notifications";
 
             Notification newNotification = new Notification();
             newNotification.Date = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
-            newNotification.ObjectId =objavaId;
+            newNotification.ObjectId =objavaId.ToString();
             newNotification.Text = $"Korisnik: {lajk.Username} je lajkovao vasu objavu";
             newNotification.Type = "lajk";
             await db.ListLeftPushAsync(notificationKey, JsonConvert.SerializeObject(newNotification));
+			 await db.StringIncrementAsync($"user:{objavaAutorId}:unreadNots");
+			
+			string connectionId = _connections.getConnectionId(objavaAutorUsername);
+            if (connectionId!="")
+            await _chatHub.Clients.Client(connectionId).ReceiveNotification(newNotification);
 
             return Ok();
 
@@ -220,6 +254,7 @@ namespace back
             long userId = (long)await db.StringGetAsync(lajk.Username);
             await db.ListLeftPushAsync(komentarLajkoviKey, JsonConvert.SerializeObject(lajk));
             long autorKomentaraId = (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");
+			string autorKomentaraUsername=await db.HashGetAsync($"user:{autorKomentaraId}","username");
             long objavaId = (long)await db.HashGetAsync($"komentar:{komentarId}", "objavaId");
             //long objavaAutorId = (long)await db.HashGetAsync($"objava:{objavaId}", "author");
 
@@ -227,10 +262,15 @@ namespace back
 
             Notification newNotification = new Notification();
             newNotification.Date = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
-            newNotification.ObjectId = objavaId;
+            newNotification.ObjectId = objavaId.ToString();
             newNotification.Text = $"Korisnik: {lajk.Username} je lajkovao vas komentar";
             newNotification.Type = "lajk";
             await db.ListLeftPushAsync(notificationKey, JsonConvert.SerializeObject(newNotification));
+			 await db.StringIncrementAsync($"user:{autorKomentaraId}:unreadNots");
+			
+				string connectionId = _connections.getConnectionId(autorKomentaraUsername);
+            if (connectionId!="")
+            await _chatHub.Clients.Client(connectionId).ReceiveNotification(newNotification);
 
             return Ok();
 
@@ -254,6 +294,27 @@ namespace back
             }
             return Ok(objave);
         }
+		
+		[HttpGet]
+		[Route("getNotifications/{username}")]
+		public async Task<IActionResult> GetNotifikacije(string username)
+		{
+			 var db = _redis.GetDatabase();
+            if (await db.KeyExistsAsync($"username:{username}") == false)
+            {
+                return BadRequest(" username is non-existing");
+            }
+			 long userId = (long)await db.StringGetAsync($"username:{username}");
+			string notificationKey = $"user:{userId}:notifications";
+            var notifikacije = await db.ListRangeAsync(notificationKey, 0, -1);
+            List<Notification> messages = new List<Notification>();
+            foreach(var notification in notifikacije)
+            {
+                Notification notifikacija = JsonConvert.DeserializeObject<Notification>(notification);
+                messages.Add(notifikacija);
+            }
+            return Ok(notifikacije);
+		}
 
         [HttpGet]
         [Route("getObjave/{username}")]

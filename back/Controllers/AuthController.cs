@@ -133,8 +133,10 @@ namespace back
                      new HashEntry("username",user.Username),
                      new HashEntry("password",user.Password),
                      new HashEntry("email",user.Email),
-                     new HashEntry("isOnline",true)
+                     new HashEntry("isOnline",true),
+				
              });
+			 await db.StringSetAsync($"user:{id}:unreadNots","0");
             return true;
         }
 

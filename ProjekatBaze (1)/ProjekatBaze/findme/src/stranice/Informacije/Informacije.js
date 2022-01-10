@@ -27,7 +27,7 @@ export default function Informacije() {
         }).then(korisnik=>{
            korisnik.json().then(podaci=>{
             
-        
+           console.log(podaci)
             setIme(podaci.user.ime)
             setPrezime(podaci.user.prezime)
             setGodine(podaci.user.godine)

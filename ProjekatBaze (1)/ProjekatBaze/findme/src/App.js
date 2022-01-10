@@ -15,6 +15,8 @@ import Registracija from './stranice/PrijaviSe/Registracija'
 import Store from './context/Store'
 import Fotografije from './stranice/Fotografije/Fotografije'
 import Informacije from './stranice/Informacije/Informacije'
+import Pratioci from './stranice/Pratioci/Pratioci'
+import Prati from './stranice/Prati/Prati'
 function App() {
   return (
    <div>
@@ -30,6 +32,8 @@ function App() {
         <Route path='/registracija/*' element={<Registracija/>}/>
         <Route path='/Fotografije' element={<Fotografije/>}/>
         <Route path='/Informacije' element={<Informacije/>}/>
+        <Route path='/Pratioci' element={<Pratioci/>}/>
+        <Route path='/Prati' element={<Prati/>}/>
         <Route path='/UspesnoRegistrovanje' element={<UspesnoRegistrovanje/>}/>
         <Route path='/Profil' element={<Profil/>}/>
         <Route path='/PocetnaStrana' element={<Novosti/>}/>

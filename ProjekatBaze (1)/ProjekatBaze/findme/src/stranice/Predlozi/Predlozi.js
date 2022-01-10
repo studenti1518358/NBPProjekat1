@@ -7,12 +7,12 @@ import NemaVise from '../../NemaVise'
 export default function Predlozi() {
    const  [users,setUsers]=useState([])
    useEffect(() => {
-    console.log("hi");
+    
     const asyncFetch=async ()=>{
       const response1=await fetch('http://localhost:5000/api/User/matches?username='+localStorage.getItem("username"));
-      const listaStavki=await response1.json();
+      const listaStavki=await response1.json()
       setUsers(listaStavki)
-      console.log(listaStavki)
+     // console.log(listaStavki)
 
     }
 

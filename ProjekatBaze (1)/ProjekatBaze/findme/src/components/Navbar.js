@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 import $ from 'jquery'
 
 const Navbar = () => {
-  const [prikazi,setPrikazi]=useState(true)  
+  //const [prikazi,setPrikazi]=useState(true)  
   const [prikaziOdjviSe,setPrikaziOdjaviSe]=useState(false)  
 
   function animation(){
@@ -38,33 +38,30 @@ const Navbar = () => {
 
   useEffect(() => {
     
+    if(localStorage.getItem("username")!=null)
+    {
+      setPrikaziOdjaviSe(true)
+    }
     animation()
     $(window).on('resize', function(){
       setTimeout(function(){ animation()}, 500)
     })
-    let tok=localStorage.getItem("jwt");
-        if(tok!=null)
-        {
-            setPrikazi(false)
-            setPrikaziOdjaviSe(true)
-
-        }
+    
   }, [])
   const odjaviSe=async ()=>{
 
     localStorage.setItem("profilna",null)
 
-    const response=await fetch('http://localhost:5000/api/Auth/logoutUser',{
+    /*const response=*/await fetch('http://localhost:5000/api/Auth/logoutUser',{
             method:'POST',
             headers:{'Content-Type':'application/json'},
             credentials:'include'
            
            
           });
-          
+          setPrikaziOdjaviSe(true)
+        //  setPrikazi(true)
     localStorage.clear()
-   
-   
     window.location.reload()
 }
   return (
@@ -109,18 +106,18 @@ const Navbar = () => {
               </NavLink>
             </li>
 
-           {prikazi? <li className="nav-item">
+           {prikaziOdjviSe? null: <li className="nav-item">
               <NavLink className="nav-link" to="/prijaviSe" >
                 Prijavi se
               </NavLink> 
-            </li>:null}
+            </li>}
 
-          {prikazi? <li className="nav-item">
+          {prikaziOdjviSe? null:<li className="nav-item">
               <NavLink className="nav-link" to="/registracija/registrujSe" >
                Registruj se
               </NavLink>
-            </li>:null}
-          {setPrikaziOdjaviSe?
+            </li>}
+          {prikaziOdjviSe?
           <li className="nav-item">
           <NavLink className="nav-link" to="/PrijaviSe" onClick={odjaviSe} >
            Odjavi se

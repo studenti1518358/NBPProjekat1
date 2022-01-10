@@ -24,13 +24,16 @@ export default function Share() {
         }
         reader.readAsDataURL(imgFile)
         setSlikaFile(imgFile)
-        console.log(imgFile)
+        
         
       }
     }
     const podeli=async ()=>{
+
+      
       if(prikazFormeZaIzborSlike)
       {
+
       const formData=new FormData()
        formData.append("slikaFile",slikaFile)
        console.log(slikaFile)
@@ -44,16 +47,14 @@ export default function Share() {
          console.log(p.data)
          
         }
-       console.log(p.data)
+       
        setSlika(p.data)
-       console.log(slika)
-       console.log(p.data)
+      
        slicica=p.data
-       console.log(slicica)
+      
       })
       
-      console.log(opis)
-      console.log(slika)
+     
       setSlika(slicica)
       fetch("http://localhost:5000/api/Objave/objavi",{
         method:"POST",
@@ -75,23 +76,25 @@ export default function Share() {
     } 
     else
     {
+      console.log("Status:"+status)
+      console.log(localStorage.getItem("username"))
       fetch("http://localhost:5000/api/Objave/objavi",{
         method:"POST",
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify(
           {
-            text:status,
-            slika:null,
+            author:localStorage.getItem("username"),
             date:"",
-            author:localStorage.getItem("username")
+            text:status,
+            slika:""
           }
         )
       })
       
     }
     window.location.reload()
-
     }
+    
   return (
     <div className="share">
       <div className="shareWrapper">

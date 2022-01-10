@@ -1,3 +1,8 @@
+topbarContainerGlavni
+{
+  display: flex;
+  flex-direction: column;
+}
 .topbarContainer {
     height: 50px;
     width: 100%;
@@ -22,7 +27,8 @@
   }
   
   .topbarCenter {
-    flex: 5;
+    flex:5;
+    flex-direction: column;
   }
   
   .searchbar {
@@ -40,7 +46,7 @@
   }
   
   .searchInput {
-      margin-top: 20px;
+    margin-top: 20px;
     width: 100%;
     height: 30px;
     background-color: white;
@@ -51,6 +57,12 @@
   
   .searchInput:focus {
     outline: none;
+  }
+  .divPretrazi
+  {
+    width: 250px;
+    height: 250px;
+    background-color: aliceblue;
   }
   
   .topbarRight {
@@ -105,3 +117,39 @@
    height: 35px;  
    margin-left: 20px; 
   }
+  .divTopBarPretrazi
+  {
+    width:100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .divPratilacPretraga
+  {
+    
+    display: flex;
+    width:100%;
+  
+    background-color:rgb(226, 226, 226);
+    height: 1cm;
+    margin: 2px;
+    padding: 5px;
+   align-items: center;
+  }
+  .divPratilacGlavni
+{
+    display: flex;
+    width:100%;
+    background-color:rgb(226, 226, 226);
+    margin: 2px;
+    padding: 5px;
+   align-items: center;
+   justify-content: space-between;
+}
+.imgPratilacc
+{
+    width: 40px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}

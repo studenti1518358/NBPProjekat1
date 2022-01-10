@@ -1,31 +1,94 @@
 import "./Topbar.css"
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useMemo} from 'react'
 import {NavLink, useNavigate} from "react-router-dom"
-
+import Search from './Search'
 export default function Topbar() {
   const navigate=useNavigate()
+
   const handleHistory1=()=>
   {
     navigate("/Profil")
   }
+  const podaci=[
+    {
+      ime:'Andrea',
+      prezime:'Popovic',
+      slika:'/slike/prof1.jpg'
+    },
+    {
+      ime:'Milos',
+      prezime:'Popovic',
+      slika:'/slike/profil.jpg'
+    },
+    {
+      ime:'Marko',
+      prezime:'Markovic',
+      slika:'/slike/prof2.jpg'
+    },
+    {
+      ime:'Nikola',
+      prezime:'Pesic',
+      slika:'/slike/profil.jpg'
+    },
+    {
+      ime:'Mihajlo',
+      prezime:'Popovic',
+      slika:'/slike/prof3.jpg'
+    },
+    {
+      ime:'Ana',
+      prezime:'Markovic',
+      slika:'/slike/prof1.jpg'
+    }
+  ]
    const [profilnaSrc,setProfilnaSrc]=useState('/slike/profil.jpg')
+   const [prikaziDiv,setPrikaziDiv]=useState(false)
+   const [pretraga,setPretraga]=useState([])
+   const [trStranica,setTrStranica]=useState(1)
+   const [ukupnoStavki,setUkupnoStavki]=useState(0)
+   const [pretrazi,setPretrazi] =useState("")
+   const STAVKE_PO_STRANICI=5
    useEffect(() => {
      setProfilnaSrc(localStorage.getItem("profilna"))
     
   },[])
-  const [isLogged,setIsLogged]=useState(true)
- 
- 
+const [isLogged,setIsLogged]=useState(true)
+
+ const  pretrazii=(e)=>
+ {
+   setPrikaziDiv(true)
+   setPretrazi(e)
+   
+   let obv=podaci
+   if(e==="")
+   {
+    setPrikaziDiv(false)
+    setPretrazi(e)
+   }
+   if(pretrazi)
+  {
+      obv=obv.filter(
+          obav=>
+          obav.ime.toLowerCase().includes(pretrazi.toLowerCase()) ||
+          obav.prezime.toLowerCase().includes(pretrazi.toLowerCase())
+      )
+  }
+  setPretraga(obv)
+
+ }
+
+
   return (
-    <div className="topbarContainer">
-      
+    <div className="topbarContainerGlavni">
+    <div className="topbarContainer"> 
       <div className="topbarCenter">
        
           <input
             placeholder="Pretraži "
             className="searchInput"
+            onChange={e=>pretrazii(e.target.value)}
           />
-       
+         
       </div>
       <div className="topbarRight">
         <div className="topbarLinks">
@@ -57,6 +120,19 @@ export default function Topbar() {
         </div>
        {isLogged && <img  src={profilnaSrc} alt="" className="topbarImg" onClick={handleHistory1}/>}
       </div>
+    </div>
+    {prikaziDiv?<div className='divTopBarPretrazi'>
+    {pretraga.map((obv,i)=>(
+            <div className= 'divPratilacGlavnii'>
+                <div className='divPratilacPretraga'>
+               <img alt="" src={obv.slika} className='imgPratilacc' key={i}/>
+               <label  className='lblPratilac' key={i+999999}>{obv.ime} {obv.prezime}</label>
+               </div>
+              
+            </div>
+         ))}
+
+    </div>:null}
     </div>
   )
 }

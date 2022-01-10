@@ -14,6 +14,14 @@ export default function Profile() {
   {
     navigate("/Informacije")
   }
+  const handleHistory3=()=>
+  {
+    navigate("/Pratioci")
+  }
+  const handleHistory4=()=>
+  {
+    navigate("/Prati")
+  }
   const [prikazFormeZaIzborSlike,setPrikazFormeZaIzborSlike]=useState(false)
   const [prikazFormeZaIzborSlikeNaslovna,setPrikazFormeZaIzborSlikeNaslovna]=useState(false)
   const [prikazDugmetaIzmeniSliku,setPrikazDugmetaIzmeniSliku]=useState(true)
@@ -160,6 +168,7 @@ export default function Profile() {
           onClick={()=> izmeniTrajnoNaslovnuSliku()}>Sacuvaj izmenu</button>:null}
             </div>
           </div>
+          
           <div className="profileRightBottom">
            <Share/>
            <div className='divBtnsProfil'>
@@ -169,10 +178,10 @@ export default function Profile() {
            <button className="btnProfil" onClick={handleHistory1}>
              Fotografije
            </button>
-           <button className="btnProfil" onClick={handleHistory1}>
+           <button className="btnProfil" onClick={handleHistory3}>
              Pratioci
            </button>
-           <button className="btnProfil" onClick={handleHistory1}>
+           <button className="btnProfil" onClick={handleHistory4}>
              Prati
            </button>
            </div>

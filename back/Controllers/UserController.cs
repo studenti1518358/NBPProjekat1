@@ -34,6 +34,7 @@ namespace back
        
 
         [HttpGet]
+        [Route("GetUser/{username}")]
         public async Task<IActionResult> GetUser(string username)
         {
             var db = _redis.GetDatabase();
@@ -90,7 +91,7 @@ namespace back
             
         }
 		[HttpGet]
-		[Route("all users")]
+		[Route("allUsers")]
 		public async Task<IActionResult> getAllUsers()
 		{
 			 var statementText = new StringBuilder();

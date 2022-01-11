@@ -9,7 +9,7 @@ export default function Topbar() {
   {
     navigate("/Profil")
   }
-  const podaci=[
+  /*const podaci=[
     {
       ime:'Andrea',
       prezime:'Popovic',
@@ -40,17 +40,24 @@ export default function Topbar() {
       prezime:'Markovic',
       slika:'/slike/prof1.jpg'
     }
-  ]
+  ]*/
+   const [podaci,setPodaci]= useState([])
    const [profilnaSrc,setProfilnaSrc]=useState('/slike/profil.jpg')
    const [prikaziDiv,setPrikaziDiv]=useState(false)
    const [pretraga,setPretraga]=useState([])
-   const [trStranica,setTrStranica]=useState(1)
-   const [ukupnoStavki,setUkupnoStavki]=useState(0)
    const [pretrazi,setPretrazi] =useState("")
-   const STAVKE_PO_STRANICI=5
+  
    useEffect(() => {
      setProfilnaSrc(localStorage.getItem("profilna"))
     
+     fetch("http://localhost:5000/api/User/allUsers").then(pod=>{
+               pod.json().then(obv=>{
+                 
+                  setPodaci(obv)
+
+                })
+           })
+   
   },[])
 const [isLogged,setIsLogged]=useState(true)
 
@@ -125,10 +132,12 @@ const [isLogged,setIsLogged]=useState(true)
     {pretraga.map((obv,i)=>(
             <div className= 'divPratilacGlavnii'>
                 <div className='divPratilacPretraga'>
-               <img alt="" src={obv.slika} className='imgPratilacc' key={i}/>
+               <img alt="" src={obv.profilnaSrc} className='imgPratilacc' key={i}/>
                <label  className='lblPratilac' key={i+999999}>{obv.ime} {obv.prezime}</label>
                </div>
-              
+               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-dots-fill ikonicaBar" viewBox="0 0 16 16">
+          <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+         </svg>
             </div>
          ))}
 

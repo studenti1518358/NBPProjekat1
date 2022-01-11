@@ -89,6 +89,39 @@ namespace back
             }
             
         }
+		[HttpGet]
+		[Route("all users")]
+		public async Task<IActionResult> getAllUsers()
+		{
+			 var statementText = new StringBuilder();
+		statementText.Append($"MATCH (n:User) return properties(n)");
+        
+            var session = this._driver.AsyncSession();
+
+            var result = await session.ReadTransactionAsync(async tx => {
+                var result = tx.RunAsync(statementText.ToString());
+
+                var rez = await result;
+                var records = await rez.ToListAsync();
+                //return JsonConvert.SerializeObject(record[0]);
+                return records.Select(x=>JsonConvert.SerializeObject(x[0]));
+
+            });
+            Console.WriteLine(result.ToString());
+            var users = result.Select(x => JsonConvert.DeserializeObject<Neo4jUser>(x)).ToList();
+            var db = _redis.GetDatabase();
+            users.ForEach(async user =>
+            {
+                user.ProfilnaSrc = await db.HashGetAsync($"user:{user.Id}", "ProfilnaSrc");
+                Console.WriteLine(user.ProfilnaSrc);
+                Console.WriteLine($"user:{user.Id}");
+            });
+            // return Ok(JsonConvert.DeserializeObject<Neo4jUser>(result));
+           // Console.WriteLine()
+           users.ForEach(user=> { Console.WriteLine(user.ProfilnaSrc); Console.WriteLine(user.Id); });
+            return Ok(users);
+
+		}
 
         [HttpGet]
         [Route("matches")]

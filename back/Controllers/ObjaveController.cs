@@ -69,6 +69,27 @@ namespace back
 
 
         }
+		[Route("unsubscribe")]
+		[HttpGet]
+		public async Task<IActionResult> Unsubscribe(string usernamePub,string usernameSub)
+		{
+			  var db = _redis.GetDatabase();
+
+            if (await db.KeyExistsAsync($"username:{usernamePub}") == false || await db.KeyExistsAsync($"username:{usernameSub}") == false)
+            {
+                return BadRequest("Some usernames are non-existing");
+            }
+            int idPub = (int)await db.StringGetAsync($"username:{usernamePub}");
+            int idSub = (int)await db.StringGetAsync($"username:{usernameSub}");
+            string usernamePubSetKey = $"user:{idPub}:followers";
+            string usernameSubSetKey = $"user:{idSub}:following";
+			
+			  await db.SetRemoveAsync(usernamePubSetKey, idSub);
+            await db.SetRemoveAsync(usernameSubSetKey, idPub);
+			
+			return Ok();
+			
+		}
 		[Route("getFollowers/{username}")]
 		[HttpGet]
 		public async Task<IActionResult> GetFollowers(string username)

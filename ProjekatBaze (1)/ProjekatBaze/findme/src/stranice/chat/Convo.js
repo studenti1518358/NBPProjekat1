@@ -3,7 +3,7 @@ import React,{useState} from "react"
 import {ChatContainer,ConversationHeader,Avatar,InfoButton,MessageList,Message,MessageSeparator,MessageInput} from  "@chatscope/chat-ui-kit-react";
 import zoe from "../zoe.svg"
 
-export function Convo({me,friend,messages,addNewMessage}){
+export function Convo({me,friend,messages,addNewMessage,friendSrc}){
 
     const [myMessage,setMyMessage]=useState("")
 
@@ -17,7 +17,7 @@ export function Convo({me,friend,messages,addNewMessage}){
             message:myMessage,
             usernameFrom:me,
             usernameTo:friend,
-            date:1111
+            date:(new Date().valueOf()).toString()
         }
       addNewMessage(novaPoruka)
       setMyMessage("")
@@ -26,7 +26,7 @@ export function Convo({me,friend,messages,addNewMessage}){
    return  <ChatContainer>
       <ConversationHeader>
                     <ConversationHeader.Back />
-                    <Avatar src={zoe} name={friend} />
+                    <Avatar src={friendSrc} name={friend} />
                     <ConversationHeader.Content userName={friend} info="Active 10 mins ago" />
                     <ConversationHeader.Actions>
                     
@@ -36,7 +36,7 @@ export function Convo({me,friend,messages,addNewMessage}){
         <MessageList>
         {messages.map((message,index)=>{
             const direction=message.usernameFrom===me?"outgoing":"incoming"
-            return <Message key={index} model={{message:message.message,sentTime:message.date,sender:friend,direction:direction,position:"single"}} avatarSpacer>
+            return <Message key={index} model={{message:message.message,sentTime:new Date(Number(message.date)).toLocaleString(),sender:friend,direction:direction,position:"single"}} avatarSpacer>
 
             </Message>
         })}

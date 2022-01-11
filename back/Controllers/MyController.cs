@@ -88,9 +88,15 @@ namespace back
 
             await db.ListLeftPushAsync(roomId,JsonConvert.SerializeObject(message));
             // await _chatHub.Clients.User(message.UsernameFrom)
+			MessageDto mess=new MessageDto();
+			mess.UsernameFrom=message.UsernameFrom;
+			mess.UsernameTo=message.UsernameTo;
+			mess.Date=message.Date;
+			mess.Message=message.Message;
+			mess.SlikaSrc=await db.HashGetAsync($"user:{idFrom}","ProfilnaSrc");
             string connectionId = _connections.getConnectionId(message.UsernameTo);
             if (connectionId!="")
-            await _chatHub.Clients.Client(connectionId).ReceiveMessage(message);
+            await _chatHub.Clients.Client(connectionId).ReceiveMessage(mess);
             //await _chatHub.Clients.All.ReceiveMessage(message);
            //_chatHub.SendMessage
             return Ok(connectionId);
@@ -109,11 +115,14 @@ namespace back
             int userId = (int)await db.StringGetAsync($"username:{user}");
             string userRooms = $"user:{userId}:rooms";
             var rooms = await db.SetMembersAsync(userRooms);
-            List<ChatMessage> messages = new List<ChatMessage>();
+            List<MessageDto> messages = new List<MessageDto>();
             foreach(var roomId in rooms)
             {
                 var message = await db.ListRangeAsync((string)roomId, 0, 0);
-                ChatMessage mess = JsonConvert.DeserializeObject<ChatMessage>(message[0]);
+                MessageDto mess = JsonConvert.DeserializeObject<MessageDto>(message[0]);
+				string friend=mess.UsernameTo==user?mess.UsernameFrom:mess.UsernameTo;
+				long friendId=(long)await db.StringGetAsync($"username:{friend}");
+				mess.SlikaSrc=await db.HashGetAsync($"user:{friendId}","ProfilnaSrc");
                 messages.Add(mess);
             }
             return Ok(messages);

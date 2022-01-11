@@ -23,7 +23,9 @@ function App() {
   const [username,setUsername]=useState("")
   const [myConnection,setMyConnection]=useState(null)
   const [notification,setNotifikacija]=useState({})
+  
   const { addToast } = useToasts()
+  let connection=null
   useEffect(()=>{
     const connect=()=>{const newConnection=new HubConnectionBuilder()
         
@@ -37,7 +39,12 @@ function App() {
     .then(result=>{
         console.log('connect');
         newConnection.invoke("GetConnectionId").then(rez=>{console.log(rez)})
-    
+        newConnection.on("ReceiveMessage",message=>{
+          addToast("Korisnik: "+message.usernameFrom+" vam je posalo/la poruku",{
+            appearance:'info',
+            autoDismiss:true
+          })
+        })
         newConnection.on('ReceiveNotification',notifikacija=>{
            
           //setMessages(prevState=>[...prevState,message])
@@ -51,7 +58,10 @@ function App() {
         });
     })
     .catch(e=>console.log('ne valja',e));
-    setMyConnection(newConnection)}
+    setMyConnection(newConnection)
+  connection=newConnection
+console.log(connection)
+  console.log(newConnection)}
 
     connect()
     
@@ -79,7 +89,7 @@ function App() {
         <Route path='/Profil' element={<Profil/>}/>
         <Route path='/PocetnaStrana' element={<Novosti/>}/>
         <Route path='/Predlozi/*' element={<Predlozi/>}/>
-        <Route path='/Chat' element={<Chat/>}/>
+        <Route path='/Chat'  element={<Chat newConnection={myConnection}/>}/>
         </Routes>
       
       </Router>

@@ -1,15 +1,8 @@
-using System;
-
-using Microsoft.WindowsAzure.MediaServices.Client;
-
-namespace back.entities
+namespace backend.dtos
 {
-    public class ChatMessage 
+    public class MessageDto
     {
-      
-        
-        //tekst poruke
-        public string Message { get; set; }
+         public string Message { get; set; }
 
         //vreme slanja
         public string Date { get; set; }
@@ -18,5 +11,9 @@ namespace back.entities
 
         //username primaoca
         public string UsernameFrom { get; set; }
+		//slika sagovornika
+		public string SlikaSrc{get;set;}
+
+
     }
 }

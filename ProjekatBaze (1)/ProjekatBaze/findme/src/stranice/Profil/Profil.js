@@ -56,10 +56,16 @@ export default function Profile() {
                    localStorage.setItem("username",podaci.username)
                 
                })
+<<<<<<< HEAD
                fetch("http://localhost:5000/api/User/getUser/"+localStorage.getItem("username"), {
                 headers:{'Content-Type':'application/json'},
                 credentials:'include'}).then(korisnik=>{
                   if(korisnik.status===200){
+=======
+               fetch("http://localhost:5000/api/User/GetUser/"+localStorage.getItem("username"), {
+                headers:{'Content-Type':'application/json'},
+                credentials:'include'}).then(korisnik=>{
+>>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
                  korisnik.json().then(podaci=>{
                    console.log(podaci)
                   setIme(podaci.user.ime)
@@ -67,7 +73,10 @@ export default function Profile() {
                  
                   
                  })
+<<<<<<< HEAD
                 }
+=======
+>>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
           })
         })
 		   const getObjave=async()=>{ const objaveRes=await fetch("http://localhost:5000/api/Objave/getObjave/"+localStorage.getItem("username"))

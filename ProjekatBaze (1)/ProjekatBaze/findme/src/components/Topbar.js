@@ -1,21 +1,14 @@
 import "./Topbar.css"
-import React,{useState,useEffect,useMemo,useContext,useRef} from 'react'
+import React,{useState,useEffect,useMemo} from 'react'
 import {NavLink, useNavigate} from "react-router-dom"
 import Search from './Search'
-import {Context} from '../context/Store'
-import Obavestenja from "./Obavestenja"
 export default function Topbar() {
-  const [state,dispatch]=useContext(Context);
-  const [showNotifications,setShowNotifications]=useState(false)
   const navigate=useNavigate()
 
   const handleHistory1=()=>
   {
     navigate("/Profil")
   }
-
-  
-  
   /*const podaci=[
     {
       ime:'Andrea',
@@ -53,29 +46,23 @@ export default function Topbar() {
    const [prikaziDiv,setPrikaziDiv]=useState(false)
    const [pretraga,setPretraga]=useState([])
    const [pretrazi,setPretrazi] =useState("")
-   const obavestenjaRef = useRef(null);
   
    useEffect(() => {
      setProfilnaSrc(localStorage.getItem("profilna"))
     
      fetch("http://localhost:5000/api/User/allUsers").then(pod=>{
-       if(pod.status===200){
                pod.json().then(obv=>{
-                
                  
                   setPodaci(obv)
-               
 
                 })
-              }
            })
-          
+   
   },[])
 const [isLogged,setIsLogged]=useState(true)
 
  const  pretrazii=(e)=>
  {
-   
    setPrikaziDiv(true)
    setPretrazi(e)
    
@@ -93,7 +80,6 @@ const [isLogged,setIsLogged]=useState(true)
           obav.prezime.toLowerCase().includes(pretrazi.toLowerCase())
       )
   }
- 
   setPretraga(obv)
 
  }
@@ -124,10 +110,9 @@ const [isLogged,setIsLogged]=useState(true)
             <span className="topbarIconBadge">1</span>
           </div>
           <div className="topbarIconItem">
-          <svg onClick={()=>setShowNotifications(true)} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bell ikonicaBar" viewBox="0 0 16 16">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bell ikonicaBar" viewBox="0 0 16 16">
           <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
          </svg>
-        {showNotifications && <Obavestenja ref={obavestenjaRef}></Obavestenja>}
             <span className="topbarIconBadge">1</span>
           </div>
           <div className="topbarIconItem">
@@ -144,24 +129,17 @@ const [isLogged,setIsLogged]=useState(true)
       </div>
     </div>
     {prikaziDiv?<div className='divTopBarPretrazi'>
-    {pretraga.map((obv,i)=>{
-        const changeFriend=()=>{
-          dispatch({type:'SET_FRIEND',payload:obv.username});
-          dispatch({type:'SET_FRIEND_SRC',payload:obv.profilnaSrc});
-          setPrikaziDiv(false)
-          navigate('/Chat')
-
-        }
-          return ( <div className= 'divPratilacGlavnii'>
+    {pretraga.map((obv,i)=>(
+            <div className= 'divPratilacGlavnii'>
                 <div className='divPratilacPretraga'>
                <img alt="" src={obv.profilnaSrc} className='imgPratilacc' key={i}/>
                <label  className='lblPratilac' key={i+999999}>{obv.ime} {obv.prezime}</label>
                </div>
-               <svg onClick={changeFriend} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-dots-fill ikonicaBar" viewBox="0 0 16 16">
+               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-dots-fill ikonicaBar" viewBox="0 0 16 16">
           <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
          </svg>
             </div>
-         )})}
+         ))}
 
     </div>:null}
     </div>

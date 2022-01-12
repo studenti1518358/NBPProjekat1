@@ -34,6 +34,8 @@ export default function Profile() {
   const [naslovnaFile,setNaslovnaFile]=useState(null)
   const [korisnickoIme,setKorisnickoIme]=useState("")
   const [mojeObjave,setMojeObjave]=useState([])
+  const [ime,setIme]= useState("")
+  const [prezime,setPrezime]= useState("")
   useEffect(() => {
            
             fetch("http://localhost:5000/api/Auth/getUser", {
@@ -54,7 +56,20 @@ export default function Profile() {
                    localStorage.setItem("username",podaci.username)
                 
                })
+               fetch("http://localhost:5000/api/User/getUser/"+localStorage.getItem("username"), {
+                headers:{'Content-Type':'application/json'},
+                credentials:'include'}).then(korisnik=>{
+                  if(korisnik.status===200){
+                 korisnik.json().then(podaci=>{
+                   console.log(podaci)
+                  setIme(podaci.user.ime)
+                  setPrezime(podaci.user.prezime)
+                 
+                  
+                 })
+                }
           })
+        })
 		   const getObjave=async()=>{ const objaveRes=await fetch("http://localhost:5000/api/Objave/getObjave/"+localStorage.getItem("username"))
           console.log(objaveRes)
           const objave=await objaveRes.json()
@@ -144,7 +159,7 @@ export default function Profile() {
               />
             </div>
             <div className="profileInfo">
-                <h4 className="profileInfoName">Ana Milenkovic</h4>
+                <h4 className="profileInfoName">{ime} {prezime}</h4>
                 <span className="profileInfoDesc">Zdravo svima!</span>
                 <div className='divDugmiciIzmeniSlike'>
                 {prikazDugmetaIzmeniSliku? <button className='btn btn-info btnIzmeniSliku' 

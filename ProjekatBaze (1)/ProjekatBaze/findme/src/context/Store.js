@@ -4,6 +4,8 @@ import Reducer from './Reducer'
 
 const initialState = {
    isAuth:false,
+   friend:"",
+   friendSrc:"",
    user:{
        id:-1,
        username:'',

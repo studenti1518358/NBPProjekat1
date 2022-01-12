@@ -334,7 +334,7 @@ namespace back
                 Notification notifikacija = JsonConvert.DeserializeObject<Notification>(notification);
                 messages.Add(notifikacija);
             }
-            return Ok(notifikacije);
+            return Ok(messages);
 		}
 
         [HttpGet]

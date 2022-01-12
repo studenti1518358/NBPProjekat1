@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from "react";
+import React,{useState, useEffect,useContext} from "react";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   MainContainer,
@@ -7,14 +7,17 @@ import {
 
 import {ChatsList} from "./ChatsList"
 import { Convo } from "./Convo";
+import {Context} from '../../context/Store'
+import ChatSidebar from './ChatSidebar'
 import { HubConnectionBuilder } from '@microsoft/signalr';
 export function Chat({newConnection}){
 
   const [messages,setMessages]=useState([])
   const [convoList,setConvoList]=useState([])
-  const [friend,setFriend]=useState("")
-  const [friendSrc,setFriendSrc]=useState("")
+  //const [friend,setFriend]=useState("")
+  //const [friendSrc,setFriendSrc]=useState("")
   const [first,setFirst]=useState(true)
+  const [state,dispatch]=useContext(Context);
   
   //const [myMessage,setMyMessage]=useState("")
   const compareMessages=(m1,m2)=>{
@@ -27,8 +30,9 @@ export function Chat({newConnection}){
   }
  
   useEffect(()=>{
+    
     const pokupiPoruke=async()=>{
-      const response=await fetch('http://localhost:5000/api/My/getConversation?user1='+localStorage.getItem('username')+'&user2='+friend);
+      const response=await fetch('http://localhost:5000/api/My/getConversation?user1='+localStorage.getItem('username')+'&user2='+state.friend);
       const poruke=await response.json()
       setMessages(poruke.reverse())
   }
@@ -38,10 +42,12 @@ export function Chat({newConnection}){
     console.log(poruke)
     setConvoList(poruke.sort(compareMessages))
     console.log(poruke)
-    if(first){
-    setFriend(poruke[0].usernameTo===localStorage.getItem('username')?poruke[0].usernameFrom:poruke[0].usernameTo)
-    console.log(friend)
-    setFriendSrc(poruke[0].slikaSrc)
+    if(!state.friend){
+    const newFriend=poruke[0].usernameTo===localStorage.getItem('username')?poruke[0].usernameFrom:poruke[0].usernameTo;
+    dispatch({type:'SET_FRIEND',payload:newFriend});
+    console.log(state.friend)
+   // setFriendSrc(poruke[0].slikaSrc)
+    dispatch({type:'SET_FRIEND_SRC',payload:poruke[0].slikaSrc});
     setFirst(false)
     }
   }
@@ -53,7 +59,7 @@ export function Chat({newConnection}){
    
       newConnection.on('ReceiveMessage',message=>{
              console.log(message)
-               if(message.usernameFrom===friend)
+               if(message.usernameFrom===state.friend)
                   setMessages(prevState=>[...prevState,message])
               const newConvoList=[...convoList]
               let nova=true
@@ -74,21 +80,25 @@ export function Chat({newConnection}){
             });}
         
       //  .catch(e=>console.log('ne valja',e));},[])
-          },[newConnection,friend])
+          },[newConnection,state.friend])
   const addNewMessage=async (message)=>{
     setMessages(prevState=>[...prevState,message])
     const newConvoList=[...convoList]
     console.log(convoList)
+    let isNewFriend=true
     newConvoList.forEach((mess,index)=>{
       if(mess.usernameFrom===message.usernameTo || mess.usernameTo===message.usernameTo)
       {
             const slikaSrc=mess.slikaSrc
             newConvoList[index]=message
             newConvoList[index].slikaSrc=slikaSrc
+            isNewFriend=false
       }
     
 
     })
+    if(isNewFriend)
+         newConvoList.push(message)
     console.log(newConvoList)
     newConvoList.sort(compareMessages)
     setConvoList(newConvoList)
@@ -104,8 +114,9 @@ export function Chat({newConnection}){
 
     return <div style={{ position: "relative", height: "520px" }}>
     <MainContainer responsive>
-    <ChatsList me={localStorage.getItem("username")} poruke={convoList} setFriend={setFriend} setFriendSrc={setFriendSrc}/>
-    <Convo friendSrc={friendSrc} me={localStorage.getItem("username")} friend={friend} messages={messages} addNewMessage={addNewMessage}/>
+    <ChatsList me={localStorage.getItem("username")} poruke={convoList} />
+    <Convo friendSrc={state.friendSrc} me={localStorage.getItem("username")} friend={state.friend} messages={messages} addNewMessage={addNewMessage}/>
+    <ChatSidebar />
     </MainContainer>
   </div>;
 }

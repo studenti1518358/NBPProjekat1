@@ -1,12 +1,12 @@
 import React,{useState} from "react"
 
 import {ChatContainer,ConversationHeader,Avatar,InfoButton,MessageList,Message,MessageSeparator,MessageInput} from  "@chatscope/chat-ui-kit-react";
-import zoe from "../zoe.svg"
+import alt from "../../altAvatar.png"
 
 export function Convo({me,friend,messages,addNewMessage,friendSrc}){
 
     const [myMessage,setMyMessage]=useState("")
-
+    const slikaSrc=friendSrc?friendSrc:alt
     const provera=(event)=>{
         setMyMessage(event)
        // console.log(myMessage)
@@ -26,7 +26,7 @@ export function Convo({me,friend,messages,addNewMessage,friendSrc}){
    return  <ChatContainer>
       <ConversationHeader>
                     <ConversationHeader.Back />
-                    <Avatar src={friendSrc} name={friend} />
+                    <Avatar src={slikaSrc}  name={friend} />
                     <ConversationHeader.Content userName={friend} info="Active 10 mins ago" />
                     <ConversationHeader.Actions>
                     

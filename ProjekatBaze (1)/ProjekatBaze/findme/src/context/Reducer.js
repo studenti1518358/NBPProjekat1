@@ -10,6 +10,16 @@ const Reducer = (state, action) => {
                 ...state,
                 user: action.payload
             };
+        case 'SET_FRIEND':
+             return{
+                 ...state,
+                 friend:action.payload
+             }
+        case 'SET_FRIEND_SRC':
+            return{
+                ...state,
+                friendSrc:action.payload
+            }
       
         default:
             return state;

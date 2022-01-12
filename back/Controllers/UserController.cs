@@ -31,9 +31,27 @@ namespace back
           
         }
 
-       
+       [HttpPost]
+	   [Route("dodajOpis/{username}")]
+	   public async Task<IActionResult> DodajOpis(string username,[FromBody] string opis)
+	   {
+		   var statementText = new StringBuilder();
+                statementText.Append($"MATCH (n:User {{username:$username}}) SET n.opis=$opis RETURN n.opis");
+                var statementParameters = new Dictionary<string, object>
+        {
+            {"username", username },
+				{"opis",opis}
+
+
+        };
+                var session = this._driver.AsyncSession();
+
+               var result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
+			return Ok();
+	   }
 
         [HttpGet]
+        [Route("GetUser/{username}")]
         public async Task<IActionResult> GetUser(string username)
         {
             var db = _redis.GetDatabase();
@@ -90,7 +108,7 @@ namespace back
             
         }
 		[HttpGet]
-		[Route("all users")]
+		[Route("allUsers")]
 		public async Task<IActionResult> getAllUsers()
 		{
 			 var statementText = new StringBuilder();

@@ -1,0 +1,21 @@
+.card
+{
+    position: fixed;
+    left: 50%;
+    top: 5%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 400px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    background-color: aliceblue;
+}
+
+#show{
+    visibility: visible;
+}
+
+#hide{
+    visibility: hidden;
+}

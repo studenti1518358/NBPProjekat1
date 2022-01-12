@@ -23,7 +23,7 @@ function App() {
   const [username,setUsername]=useState("")
   const [myConnection,setMyConnection]=useState(null)
   const [notification,setNotifikacija]=useState({})
-  
+  const [friend,setFriend]=useState("")
   const { addToast } = useToasts()
   let connection=null
   useEffect(()=>{

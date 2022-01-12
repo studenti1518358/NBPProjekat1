@@ -21,7 +21,7 @@ export default function Informacije() {
    const [visinaPartnera,setVisinaPartnera] =useState(0)
     useEffect(() => {
            
-        fetch("http://localhost:5000/api/User?username="+localStorage.getItem("username"), {
+        fetch("http://localhost:5000/api/User/GetUser/"+localStorage.getItem("username"), {
           headers:{'Content-Type':'application/json'},
           credentials:'include'
         }).then(korisnik=>{
@@ -54,26 +54,26 @@ export default function Informacije() {
         <div className="divGlavniInformacije">
             <div className='divInfoPrvi'>
                 <img src={localStorage.getItem("profilna") }alt="" className="profilnaInfo"></img>
-                <label className='lbllInfo'>Ime: {ime}</label>
-                <label className='lbllInfo'>Prezime: {prezime}</label>
-                <label className='lbllInfo'>Godine: {godine}</label>
-                <label className='lbllInfo'>Mesto stanovanja: {grad}</label>
-                <label className='lbllInfo'>Status veze: {status}</label>
-                <label className='lbllInfo'>Zanimanje: {zanimanje}</label>
-                <label className='lbllInfo'>Trazi: {trazi}</label>
+                <label className='lblInfo'>Ime: <input value= {ime} className='infoInput'/></label>
+                <label className='lblInfo'>Prezime: <input value= {prezime} className='infoInput'/></label>
+                <label className='lblInfo'>Godine: <input value= {godine} className='infoInput'/></label>
+                <label className='lblInfo'>Mesto stanovanja: <input value= {grad} className='infoInput'/></label>
+                <label className='lblInfo'>Status veze: <input value= {status} className='infoInput'/></label>
+                <label className='lblInfo'>Zanimanje: <input value= {zanimanje} className='infoInput'/></label>
+                <label className='lblInfo'>Trazi: <input value= {trazi} className='infoInput'/></label>
             </div>
 
             <div className='divInfoPrvi'>
                 <h4>Dodatne informacije:</h4>
                 <label>          </label>
                 <label>          </label>
-                <label className='lblInfo'>Boja kose: {kosa}</label>
-                <label className='lblInfo'>Boja ociju: {oci}</label>
-                <label className='lblInfo'>Visina: {visina} cm</label>
-                <label className='lblInfo'>Hobi: {hobi}</label>
-                <label className='lblInfo'>Omiljeni zanr muzike: {muzika}</label>
-                <label className='lblInfo'>Omiljeni film: {film}</label>
-                <label className='lblInfo'>Omiljena knjiga: {knjiga}</label>
+                <label className='lblInfo'>Boja kose: <input value= {kosa} className='infoInput'/></label>
+                <label className='lblInfo'>Boja ociju: <input value= {oci} className='infoInput'/></label>
+                <label className='lblInfo'>Visina: <input value= {visina} className='infoInput'/> </label>
+                <label className='lblInfo'>Hobi: <input value= {hobi} className='infoInput'/></label>
+                <label className='lblInfo'>Omiljeni zanr muzike: <input value= {muzika} className='infoInput'/></label>
+                <label className='lblInfo'>Omiljeni film: <input value= {film} className='infoInput'/></label>
+                <label className='lblInfo'>Omiljena knjiga: <input value= {knjiga} className='infoInput'/></label>
                 
             </div>
 
@@ -81,11 +81,12 @@ export default function Informacije() {
                 <h4>Od partnera očekuje:</h4>
                 <label>          </label>
                 <label>          </label>
-                <label className='lblInfo'>Boja kose: {kosaPartnera}</label>
-                <label className='lblInfo'>Boja ociju: {ociPartnera}</label>
-                <label className='lblInfo'>Visina: {visinaPartnera} cm</label>
-                
-            
+                <label className='lblInfo'>Boja kose: <input value= {kosaPartnera} className='infoInput'/> </label>
+                <label className='lblInfo'>Boja ociju: <input value= {ociPartnera} className='infoInput'/> </label>
+                <label className='lblInfo'>Visina:  <input value={visinaPartnera} className='infoInput'/> </label>
+                <div className='divDugmeInfo'>
+                <button className='btn btn-info dugmeInformacije'> Izmeni</button>
+                </div>
             </div>
 
 

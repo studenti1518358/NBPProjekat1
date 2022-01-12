@@ -13,12 +13,9 @@ export default function Topbar() {
   {
     navigate("/Profil")
   }
-<<<<<<< HEAD
 
   
   
-=======
->>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
   /*const podaci=[
     {
       ime:'Andrea',
@@ -56,16 +53,12 @@ export default function Topbar() {
    const [prikaziDiv,setPrikaziDiv]=useState(false)
    const [pretraga,setPretraga]=useState([])
    const [pretrazi,setPretrazi] =useState("")
-<<<<<<< HEAD
    const obavestenjaRef = useRef(null);
-=======
->>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
   
    useEffect(() => {
      setProfilnaSrc(localStorage.getItem("profilna"))
     
      fetch("http://localhost:5000/api/User/allUsers").then(pod=>{
-<<<<<<< HEAD
        if(pod.status===200){
                pod.json().then(obv=>{
                 
@@ -77,15 +70,6 @@ export default function Topbar() {
               }
            })
           
-=======
-               pod.json().then(obv=>{
-                 
-                  setPodaci(obv)
-
-                })
-           })
-   
->>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
   },[])
 const [isLogged,setIsLogged]=useState(true)
 
@@ -173,11 +157,7 @@ const [isLogged,setIsLogged]=useState(true)
                <img alt="" src={obv.profilnaSrc} className='imgPratilacc' key={i}/>
                <label  className='lblPratilac' key={i+999999}>{obv.ime} {obv.prezime}</label>
                </div>
-<<<<<<< HEAD
                <svg onClick={changeFriend} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-dots-fill ikonicaBar" viewBox="0 0 16 16">
-=======
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-dots-fill ikonicaBar" viewBox="0 0 16 16">
->>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
           <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
          </svg>
             </div>

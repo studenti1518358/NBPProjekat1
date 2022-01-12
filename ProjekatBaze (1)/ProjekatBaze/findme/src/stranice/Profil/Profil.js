@@ -36,6 +36,9 @@ export default function Profile() {
   const [mojeObjave,setMojeObjave]=useState([])
   const [ime,setIme]= useState("")
   const [prezime,setPrezime]= useState("")
+  const [opis,setOpis]=useState("")
+  //const [prikazDodajOpis,setPrikazDodajOpis]=useState(false)
+  const [prikazFormeDodajOpis,setPrikazFormeDodajOpis]=useState(false)
   useEffect(() => {
            
             fetch("http://localhost:5000/api/Auth/getUser", {
@@ -56,27 +59,19 @@ export default function Profile() {
                    localStorage.setItem("username",podaci.username)
                 
                })
-<<<<<<< HEAD
                fetch("http://localhost:5000/api/User/getUser/"+localStorage.getItem("username"), {
                 headers:{'Content-Type':'application/json'},
                 credentials:'include'}).then(korisnik=>{
                   if(korisnik.status===200){
-=======
-               fetch("http://localhost:5000/api/User/GetUser/"+localStorage.getItem("username"), {
-                headers:{'Content-Type':'application/json'},
-                credentials:'include'}).then(korisnik=>{
->>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
                  korisnik.json().then(podaci=>{
                    console.log(podaci)
                   setIme(podaci.user.ime)
                   setPrezime(podaci.user.prezime)
+                  setOpis(podaci.user.opis)
                  
                   
                  })
-<<<<<<< HEAD
                 }
-=======
->>>>>>> a6405f32d7396ab40210b29fdfb250be25b6a1ff
           })
         })
 		   const getObjave=async()=>{ const objaveRes=await fetch("http://localhost:5000/api/Objave/getObjave/"+localStorage.getItem("username"))
@@ -144,15 +139,30 @@ export default function Profile() {
          setPrikazFormeZaIzborSlikeNaslovna(false) 
         }
       })
-        
-
+   
    }
+   const SacuvajOpis=()=>{
+     console.log(opis)
+     setPrikazFormeDodajOpis(false)
+     fetch("http://localhost:5000/api/User/dodajOpis/"+localStorage.getItem("username"),{
+            method:"POST",
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(
+              {
+                opis:opis
+              }
+            )
+            }).then(p=>{
+               
+        })
+     
+   }
+
 
   return (
     <>
       
       <div className="profile">
-        
         <div className="profileRight">
           <div className="profileRightTop">
             <div className="profileCover">
@@ -169,12 +179,13 @@ export default function Profile() {
             </div>
             <div className="profileInfo">
                 <h4 className="profileInfoName">{ime} {prezime}</h4>
-                <span className="profileInfoDesc">Zdravo svima!</span>
+                <span className="profileInfoDesc">{opis}</span>
                 <div className='divDugmiciIzmeniSlike'>
                 {prikazDugmetaIzmeniSliku? <button className='btn btn-info btnIzmeniSliku' 
           onClick={()=>{setPrikazFormeZaIzborSlike(true) ;setPrikazDugmetaIzmeniSliku(false)}}>Izmeni profilnu sliku</button>:null}
                   {prikazDugmetaIzmeniSlikuNaslovna? <button className='btn btn-info btnIzmeniSliku' 
           onClick={()=>{setPrikazFormeZaIzborSlikeNaslovna(true) ;setPrikazDugmetaIzmeniSlikuNaslovna(false)}}>Izmeni naslovnu sliku</button>:null}
+               <button className='btn btn-info btnIzmeniSliku' onClick={()=>setPrikazFormeDodajOpis(true)}>Dodaj opis</button>
                </div>
                 {prikazFormeZaIzborSlike? 
            <input type='file'
@@ -188,8 +199,24 @@ export default function Profile() {
          placeholder='Izaberi sliku'
          id='profilnaSlika'
           className='form-control-file chooseFile' onChange={izmeniNaslovnuSliku}/>:null}
+           {prikazFormeZaIzborSlikeNaslovna? 
+           <input type='file'
+         placeholder='Izaberi sliku'
+         id='profilnaSlika'
+          className='form-control-file chooseFile' onChange={izmeniNaslovnuSliku}/>:null}
+
+           {prikazFormeDodajOpis? 
+           <div className='divDodajOpis'> 
+           <input type='text'
+            placeholder='Dodaj opis'
+            onChange={e=>setOpis(e.target.value)}
+           className='form-control-file chooseFile' />
+           <button  className='btn btn-info btnDodajOpis' onClick={()=>SacuvajOpis()}> Sacuvaj</button>
+           </div>:null}
+          
          {prikazFormeZaIzborSlikeNaslovna?<button className='btn btn-info btnIzmeniSliku'
           onClick={()=> izmeniTrajnoNaslovnuSliku()}>Sacuvaj izmenu</button>:null}
+          
             </div>
           </div>
           

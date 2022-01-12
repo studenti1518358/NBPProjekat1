@@ -87,3 +87,14 @@
     width: 25%;
     background-color: rgb(167, 159, 159);
 }
+.divDodajOpis
+{
+    display:flex;
+    flex-direction:column;
+    width: 100%;
+    align-items: flex-end;
+}
+.btnDodajOpis
+{
+    width: 200px;
+}

@@ -24,6 +24,7 @@ function App() {
   const [myConnection,setMyConnection]=useState(null)
   const [notification,setNotifikacija]=useState({})
   const [friend,setFriend]=useState("")
+  
   const { addToast } = useToasts()
   let connection=null
   useEffect(()=>{
@@ -50,6 +51,7 @@ function App() {
           //setMessages(prevState=>[...prevState,message])
           console.log("stigla notifikacija")
           setNotifikacija(notifikacija)
+          console.log(notification)
             addToast(notifikacija.text,{
               appearance:'info',
               autoDismiss:true
@@ -76,7 +78,7 @@ console.log(connection)
    <Store>
       <Router>
         <Navbar />
-        <Topbar/>
+        <Topbar novaNotifikacija={notification}/>
         <Routes>
         <Route path='/' element={<Pocetna/>}/>
         <Route path='/prijaviSe' element={<PrijaviSe setUsernam={setUsername}/>}/>

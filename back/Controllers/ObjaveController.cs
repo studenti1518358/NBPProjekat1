@@ -547,6 +547,35 @@ namespace back
             
            
         }
+		
+		[HttpGet]
+		[Route("getUnread/{username}")]
+		public async Task<IActionResult> GetUnreadNotifications(string username)
+		{
+			
+			    var db = _redis.GetDatabase();
+            if (await db.KeyExistsAsync($"username:{username}") == false)
+            {
+                return BadRequest(" username is non-existing");
+            }
+            long userId = (long)await db.StringGetAsync($"username:{username}");
+			long number=(long)await db.StringGetAsync($"user:{userId}:unreadNots");
+			return Ok(number);
+		}
+		
+		[HttpGet]
+		[Route("oznaciNotifikacijeKaoProcitane/{username}")]
+		public async Task<IActionResult> ReadAllNots(string username)
+		{
+			    var db = _redis.GetDatabase();
+            if (await db.KeyExistsAsync($"username:{username}") == false)
+            {
+                return BadRequest(" username is non-existing");
+            }
+            long userId = (long)await db.StringGetAsync($"username:{username}");
+			await db.StringSetAsync($"user:{userId}:unreadNots","0");
+			return Ok();
+		}
 
     }
 }

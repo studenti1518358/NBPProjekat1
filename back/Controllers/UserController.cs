@@ -23,13 +23,31 @@ namespace back
        
 
         private readonly IConnectionMultiplexer _redis;
-        public UserController(IConnectionMultiplexer redis)
+        public  UserController(IConnectionMultiplexer redis)
         {
             _driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "admin"));
             _redis = redis;
+			sub();
+			
 
           
         }
+		private async void sub()
+		{
+			 var db = _redis.GetDatabase();
+			var cashedUsers=await db.SetMembersAsync($"neoCash");
+			foreach(var user in cashedUsers)
+			{
+				string username=(string)user;
+				  ISubscriber subb = _redis.GetSubscriber();
+            await subb.SubscribeAsync($"channel:{username}", async (channel, message) =>
+            {
+                await db.StringSetAsync($"neo4juser:{username}", message);
+			
+
+            });
+			}
+		}
 
        [HttpPost]
 	   [Route("dodajOpis/{username}")]
@@ -46,7 +64,28 @@ namespace back
         };
                 var session = this._driver.AsyncSession();
 
-               var result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
+                 var result = await session.WriteTransactionAsync(async tx =>
+                {
+                    var result = tx.RunAsync(statementText.ToString(), statementParameters);
+
+                    var rez = await result;
+                    var record = await rez.SingleAsync();
+                    return JsonConvert.SerializeObject(record[0]);
+                    //return record[0];
+
+                });
+				 var db = _redis.GetDatabase();
+				if(await db.KeyExistsAsync($"neo4juser:{username}")){
+					 
+				var user = JsonConvert.DeserializeObject<UserWithRelationships>(await db.StringGetAsync($"neo4juser:{username}"));
+				user.User.Opis=opis;
+				Console.WriteLine(JsonConvert.SerializeObject(user));
+				   ISubscriber sub = _redis.GetSubscriber();
+                string pubKey = $"channel:{username}";
+                await sub.PublishAsync(pubKey, JsonConvert.SerializeObject(user));
+				await db.StringSetAsync($"neo4juser:{username}", JsonConvert.SerializeObject(user));
+				}
+              
 			return Ok();
 	   }
 
@@ -57,9 +96,12 @@ namespace back
             var db = _redis.GetDatabase();
             //
             ISubscriber subb = _redis.GetSubscriber();
+			await db.SetAddAsync($"neoCash",username);
             await subb.SubscribeAsync($"channel:{username}", async (channel, message) =>
             {
                 await db.StringSetAsync($"neo4juser:{username}", message);
+				
+				Console.WriteLine("cao");
 
             });
             //

@@ -1,11 +1,20 @@
-import React , {useEffect,useState} from 'react'
+import React , {useEffect,useState,useContext} from 'react'
 import './Navbar.css'
 import { NavLink } from 'react-router-dom'
 import $ from 'jquery'
+import {Context} from '../context/Store'
 
 const Navbar = () => {
   //const [prikazi,setPrikazi]=useState(true)  
   const [prikaziOdjviSe,setPrikaziOdjaviSe]=useState(false)  
+  const [state,dispatch]=useContext(Context);
+
+  useEffect(()=>{
+
+    if(localStorage.getItem("username"))
+         setPrikaziOdjaviSe(true)
+
+  },[state.user])
 
   function animation(){
     var tabsNewAnim = $('#navbarSupportedContent')

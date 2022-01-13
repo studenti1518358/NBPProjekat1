@@ -39,9 +39,10 @@ export default function PrijaviSe({setUsernam}) {
     })
       const body=await response1.json()
       console.log(body)
+      localStorage.setItem("username",body.username)
       dispatch({type:'SET_USER',payload:body});
       setUsernam(body.username)
-      localStorage.setItem("username",body.username)
+     
       
       fetch("http://localhost:5000/api/Auth/getUser", {
         headers:{'Content-Type':'application/json'},

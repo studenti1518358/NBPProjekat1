@@ -59,7 +59,7 @@ export default function CommentSection({komentari,postId,setShow,setCommentsNum}
                 return (<Komentar komentar={komentar} key={index} />)
             })}
         <Form dividing className='formaKoment' reply>
-            <Form.Input placeholder="Add your comment" className='commentBox' onChange={e=>setNoviKomentar(e.target.value)} />
+            <Form.Input value={kom} placeholder="Add your comment" className='commentBox' onChange={e=>setNoviKomentar(e.target.value)} />
             <Button dividing content='Add reply' labelPosition='left' icon='edit' primary onClick={komentarisi}/>
 
             

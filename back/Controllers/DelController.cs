@@ -36,8 +36,8 @@ namespace back
         }
 
         [HttpDelete]
-        [Route("deletePhoto/{username}/{src}")]
-        public async Task<IActionResult> DeletePhoto(string username, string src)
+        [Route("deletePhoto/{username}")]
+        public async Task<IActionResult> DeletePhoto(string username, [FromBody]string src)
         {
             var db = _redis.GetDatabase();
 
@@ -48,7 +48,7 @@ namespace back
 
             int userId = (int)await db.StringGetAsync($"username:{username}");
             string slikeKey = $"user:{userId}:slike";
-            await db.ListRemoveAsync(slikeKey, src);
+            await db.ListRemoveAsync(slikeKey, src,1);
             return Ok();
         }
 

@@ -8,19 +8,19 @@ export default function Profile() {
   const navigate=useNavigate()
   const handleHistory1=()=>
   {
-    navigate("/Fotografije")
+    navigate("/Fotografije/"+localStorage.getItem("username"))
   }
   const handleHistory2=()=>
   {
-    navigate("/Informacije")
+    navigate("/Informacije/"+localStorage.getItem("username"))
   }
   const handleHistory3=()=>
   {
-    navigate("/Pratioci")
+    navigate("/Pratioci/"+localStorage.getItem("username"))
   }
   const handleHistory4=()=>
   {
-    navigate("/Prati")
+    navigate("/Prati/"+localStorage.getItem("username"))
   }
   const [prikazFormeZaIzborSlike,setPrikazFormeZaIzborSlike]=useState(false)
   const [prikazFormeZaIzborSlikeNaslovna,setPrikazFormeZaIzborSlikeNaslovna]=useState(false)

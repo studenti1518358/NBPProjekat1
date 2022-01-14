@@ -9,6 +9,7 @@ import PrijaviSe from './stranice/PrijaviSe/PrijaviSe'
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import UspesnoRegistrovanje from './stranice/PrijaviSe/UspesnoRegistrovanje'
 import Profil from './stranice/Profil/Profil'
+import TudjProfil from './stranice/Profil/TudjProfil'
 import Novosti from './stranice/Novosti/Novosti'
 import Predlozi from './stranice/Predlozi/Predlozi'
 import {Chat} from "./stranice/chat/Chat"
@@ -83,12 +84,13 @@ console.log(connection)
         <Route path='/' element={<Pocetna/>}/>
         <Route path='/prijaviSe' element={<PrijaviSe setUsernam={setUsername}/>}/>
         <Route path='/registracija/*' element={<Registracija/>}/>
-        <Route path='/Fotografije' element={<Fotografije/>}/>
-         <Route path='/Informacije' element={<Informacije/>}/>
-        <Route path='/Pratioci' element={<Pratioci/>}/>
-        <Route path='/Prati' element={<Prati/>}/>
+        <Route path='/Fotografije/:username' element={<Fotografije/>}/>
+         <Route path='/Informacije/:username' element={<Informacije/>}/>
+        <Route path='/Pratioci/:username' element={<Pratioci/>}/>
+        <Route path='/Prati/:username' element={<Prati/>}/>
         <Route path='/UspesnoRegistrovanje' element={<UspesnoRegistrovanje/>}/>
         <Route path='/Profil' element={<Profil/>}/>
+        <Route path='/profil/:username' element={<TudjProfil />} />
         <Route path='/PocetnaStrana' element={<Novosti/>}/>
         <Route path='/Predlozi/*' element={<Predlozi/>}/>
         <Route path='/Chat'  element={<Chat newConnection={myConnection}/>}/>

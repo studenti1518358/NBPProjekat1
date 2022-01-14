@@ -76,6 +76,7 @@ namespace back
            
             int idTo =(int) await db.StringGetAsync($"username:{message.UsernameTo}");
             int idFrom = (int)await db.StringGetAsync($"username:{message.UsernameFrom}");
+            await SetUserOnline(idFrom);
             int id1 = idTo < idFrom ? idTo : idFrom;
             int id2=idTo>idFrom?idTo: idFrom;
             string roomId = $"room:{id1}:{id2}";
@@ -94,6 +95,10 @@ namespace back
 			mess.Date=message.Date;
 			mess.Message=message.Message;
 			mess.SlikaSrc=await db.HashGetAsync($"user:{idFrom}","ProfilnaSrc");
+            mess.FriendLastSeen = await db.HashGetAsync($"user:{idFrom}", "lastSeen");
+            if (await db.KeyExistsAsync($"user:{idFrom}:online"))
+                mess.IsFriendOnline = true;
+            else mess.IsFriendOnline = false;
             string connectionId = _connections.getConnectionId(message.UsernameTo);
             if (connectionId!="")
             await _chatHub.Clients.Client(connectionId).ReceiveMessage(mess);
@@ -123,6 +128,10 @@ namespace back
 				string friend=mess.UsernameTo==user?mess.UsernameFrom:mess.UsernameTo;
 				long friendId=(long)await db.StringGetAsync($"username:{friend}");
 				mess.SlikaSrc=await db.HashGetAsync($"user:{friendId}","ProfilnaSrc");
+                mess.FriendLastSeen = await db.HashGetAsync($"user:{friendId}", "lastSeen");
+                if (await db.KeyExistsAsync($"user:{friendId}:online"))
+                    mess.IsFriendOnline = true;
+                else mess.IsFriendOnline = false;
                 messages.Add(mess);
             }
             return Ok(messages);
@@ -154,6 +163,16 @@ namespace back
             return Ok(messages);
 
 
+        }
+        private async Task SetUserOnline(long userId)
+        {
+            var db = _redis.GetDatabase();
+            await db.StringSetAsync($"user:{userId}:online", "true");
+            await db.KeyExpireAsync($"user:{userId}:online", TimeSpan.FromMinutes(10));
+            await db.HashSetAsync($"user:{userId}", new HashEntry[]
+            {
+                new HashEntry("lastSeen",DateTime.Now.ToString("MM/dd/yyyy HH:mm"))
+            });
         }
     }
 }

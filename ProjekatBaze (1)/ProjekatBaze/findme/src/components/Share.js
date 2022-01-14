@@ -3,7 +3,7 @@ import React,{useState,useEffect} from 'react'
 import axios from 'axios'
 
 export default function Share() {
-    const [profilnaSrc,setProfilnaSrc]=useState('/slike/profil.jpg')
+    const [profilnaSrc,setProfilnaSrc]=useState(localStorage.getItem("profilna"))
     const [prikazFormeZaIzborSlike,setPrikazFormeZaIzborSlike]=useState(false)
     const [slikaSrc,setSlikaSrc]=useState()
     const [slikaFile,setSlikaFile]=useState()

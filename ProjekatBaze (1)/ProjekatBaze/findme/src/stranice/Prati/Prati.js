@@ -1,16 +1,18 @@
 import React,{useState,useEffect,useMemo} from 'react'
 import '../Pratioci/Pratioci.css'
 import PaginationComponent from '../../components/PaginationComponent'
+import {useParams} from 'react-router-dom'
 export default function Prati() {
   
     const [ukupnoStavki,setUkupnoStavki]=useState(0)
     const [trStranica,setTrStranica]=useState(1)
     const [pratioci,setPratioci]=useState([])
     const STAVKE_PO_STRANICI=5
+    const {username}=useParams()
     useEffect(() => {
         //   const abortController=new AbortController()
    
-           fetch("http://localhost:5000/api/Objave/getFollowing/"+localStorage.getItem("username")).then(pod=>{
+           fetch("http://localhost:5000/api/Objave/getFollowing/"+username).then(pod=>{
                pod.json().then(obv=>{
                    setPratioci(obv)    
                   

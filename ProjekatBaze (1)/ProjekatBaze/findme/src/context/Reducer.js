@@ -20,6 +20,16 @@ const Reducer = (state, action) => {
                 ...state,
                 friendSrc:action.payload
             }
+            case 'SET_FRIEND_ONLINE':
+                return{
+                    ...state,
+                    friendOnline:action.payload
+                }
+                case 'SET_FRIEND_LAST_SEEN':
+                    return{
+                        ...state,
+                        friendLastSeen:action.payload
+                    }
       
         default:
             return state;

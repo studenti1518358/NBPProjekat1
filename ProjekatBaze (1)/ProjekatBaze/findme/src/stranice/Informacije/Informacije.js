@@ -1,8 +1,10 @@
 import React,{useEffect,useState} from 'react'
 import './Informacije.css'
+import {useParams} from 'react-router-dom'
 export default function Informacije() {
   // const [informacije,setInformacije]=useState([])
    const [ime,setIme] =useState("")
+   const [slika,setSlika]=useState("")
    const [prezime,setPrezime] =useState("")
    const [hobi,setHobi] =useState("")
    const [godine,setGodine] =useState(0)
@@ -19,9 +21,13 @@ export default function Informacije() {
    const [kosaPartnera,setKosaPartnera] =useState("")
    const [ociPartnera,setOciPartnera] =useState("")
    const [visinaPartnera,setVisinaPartnera] =useState(0)
+
+   const {username}=useParams()
+   const myProfile=username===localStorage.getItem("username")?true:false;
+
     useEffect(() => {
            
-        fetch("http://localhost:5000/api/User/GetUser/"+localStorage.getItem("username"), {
+        fetch("http://localhost:5000/api/User/GetUser/"+username, {
           headers:{'Content-Type':'application/json'},
           credentials:'include'
         }).then(korisnik=>{
@@ -33,6 +39,7 @@ export default function Informacije() {
             setGodine(podaci.user.godine)
             setStatus(podaci.user.bracniStatus)
             setGrad(podaci.user.mesto)
+            setSlika(podaci.user.profilnaSrc)
             setZanimanje(podaci.user.zanimanje)
             setTrazi(podaci.osobine[0].value)
             setHobi(podaci.osobine[1].value)
@@ -53,8 +60,8 @@ export default function Informacije() {
     return (
         <div className="divGlavniInformacije">
             <div className='divInfoPrvi'>
-                <img src={localStorage.getItem("profilna") }alt="" className="profilnaInfo"></img>
-                <label className='lblInfo'>Ime: <input value= {ime} className='infoInput'/></label>
+                <img src={slika }alt="" className="profilnaInfo"></img>
+                <label className='lblInfo'>Ime: <input  value= {ime} className='infoInput'/></label>
                 <label className='lblInfo'>Prezime: <input value= {prezime} className='infoInput'/></label>
                 <label className='lblInfo'>Godine: <input value= {godine} className='infoInput'/></label>
                 <label className='lblInfo'>Mesto stanovanja: <input value= {grad} className='infoInput'/></label>

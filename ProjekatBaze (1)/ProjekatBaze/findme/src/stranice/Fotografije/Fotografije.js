@@ -1,9 +1,12 @@
 import {React,useEffect,useState} from 'react'
 import './Fotografije.css'
+import {useParams} from 'react-router-dom'
+
 export default function Fotografije() {
     const [fotografije,setFotografije]=useState([])
+    const {username}=useParams()
     useEffect(() => {
-           fetch("http://localhost:5000/api/Objave/PreuzmiSlike/"+localStorage.getItem("username")).then(pod=>{
+           fetch("http://localhost:5000/api/Objave/PreuzmiSlike/"+username).then(pod=>{
                pod.json().then(obv=>{
                    setFotografije(obv)  
                     

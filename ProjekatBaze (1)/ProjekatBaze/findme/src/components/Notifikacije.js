@@ -80,9 +80,9 @@ export default function Notifikacije(props){
         
          <span className="topbarIconBadge">{brojNotifikacija}</span>
          </div>
-          <div ref ={ref} className='notifikacije'  style={{position:'absolute',overflow:'auto',right:'-100px',top:'50px'}}>
-              {showNotifikacije && (<div onClick={procitajSve} className='oznaci'>{'<Oznaci kao procitane>'}</div>)}
-        {showNotifikacije && notifikacije.map((item,index)=>{
+        {showNotifikacije &&  <div ref ={ref} className='notifikacije'  style={{position:'absolute',overflow:'auto',right:'-100px',top:'50px'}}>
+              <div onClick={procitajSve} className='oznaci'>{'<Oznaci kao procitane>'}</div>
+        {notifikacije.map((item,index)=>{
             console.log(item.isRead)
             return(
                 <Message style={{margin:"0px"}} className={item.isRead}>
@@ -91,7 +91,7 @@ export default function Notifikacije(props){
                 </Message>
             )
         })}
-        </div>
+        </div>}
       </>
     )
 }

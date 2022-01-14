@@ -47,6 +47,7 @@ namespace back
             }
             int idPub = (int)await db.StringGetAsync($"username:{usernamePub}");
             int idSub = (int)await db.StringGetAsync($"username:{usernameSub}");
+            await SetUserOnline(idSub);
             string usernamePubSetKey = $"user:{idPub}:followers";
             string usernameSubSetKey = $"user:{idSub}:following";
             await db.SetAddAsync(usernamePubSetKey, idSub);
@@ -81,6 +82,7 @@ namespace back
             }
             int idPub = (int)await db.StringGetAsync($"username:{usernamePub}");
             int idSub = (int)await db.StringGetAsync($"username:{usernameSub}");
+            await SetUserOnline(idSub);
             string usernamePubSetKey = $"user:{idPub}:followers";
             string usernameSubSetKey = $"user:{idSub}:following";
 			
@@ -150,6 +152,7 @@ namespace back
 
             long objavaId = await db.StringIncrementAsync("totalObjave");
             int authorId = (int)await db.StringGetAsync($"username:{objava.Author}");
+            await SetUserOnline(authorId);
             string userObjaveKey = $"user:{authorId}:objave";
             await db.ListLeftPushAsync(userObjaveKey, objavaId);
             string objavaKey = $"objava:{objavaId}";
@@ -193,6 +196,7 @@ namespace back
             await db.ListRightPushAsync(komentariKey, komentarId);
             string komentarKey = $"komentar:{komentarId}";
             long autorId = (long)await db.StringGetAsync($"username:{komentar.AutorUsername}");
+            await SetUserOnline(autorId);
 			
             string autorSrc = await db.HashGetAsync($"user:{autorId}", "ProfilnaSrc");
             await db.HashSetAsync(komentarKey, new HashEntry[]
@@ -237,7 +241,7 @@ namespace back
 
             string objavaLajkoviKey = $"objava:{objavaId}:lajkovi";
             long userId= (long)await db.StringGetAsync($"username:{lajk.Username}");
-
+            await SetUserOnline(userId);
             
             await db.ListLeftPushAsync(objavaLajkoviKey, JsonConvert.SerializeObject(lajk));
 
@@ -273,6 +277,7 @@ namespace back
 
             string komentarLajkoviKey = $"komentar:{komentarId}:lajkovi";
             long userId = (long)await db.StringGetAsync(lajk.Username);
+            await SetUserOnline(userId);
             await db.ListLeftPushAsync(komentarLajkoviKey, JsonConvert.SerializeObject(lajk));
             long autorKomentaraId = (long)await db.HashGetAsync($"komentar:{komentarId}", "autorId");
 			string autorKomentaraUsername=await db.HashGetAsync($"user:{autorKomentaraId}","username");
@@ -573,9 +578,21 @@ namespace back
                 return BadRequest(" username is non-existing");
             }
             long userId = (long)await db.StringGetAsync($"username:{username}");
+            await SetUserOnline(userId);
 			await db.StringSetAsync($"user:{userId}:unreadNots","0");
 			return Ok();
 		}
+
+        private async Task SetUserOnline(long userId)
+        {
+            var db = _redis.GetDatabase();
+            await db.StringSetAsync($"user:{userId}:online", "true");
+            await db.KeyExpireAsync($"user:{userId}:online", TimeSpan.FromMinutes(10));
+            await db.HashSetAsync($"user:{userId}", new HashEntry[]
+            {
+                new HashEntry("lastSeen",DateTime.Now.ToString("MM/dd/yyyy HH:mm"))
+            });
+        }
 
     }
 }

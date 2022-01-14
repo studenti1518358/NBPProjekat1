@@ -6,6 +6,8 @@ const initialState = {
    isAuth:false,
    friend:"",
    friendSrc:"",
+   friendOnline:false,
+   friendLastSeen:"",
    user:{
        id:-1,
        username:'',

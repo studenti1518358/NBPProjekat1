@@ -62,6 +62,7 @@ namespace back
                 return BadRequest("Invalid credentials");
             string usernameKey = $"username:{user.Username}";
             int userId = (int)await db.StringGetAsync(usernameKey);
+            await SetUserOnline(userId);
             string hashedPassword = await db.HashGetAsync($"user:{userId}", "password");
           
             if (!BCrypt.Net.BCrypt.Verify(user.Password, hashedPassword))
@@ -133,7 +134,7 @@ namespace back
                      new HashEntry("username",user.Username),
                      new HashEntry("password",user.Password),
                      new HashEntry("email",user.Email),
-                     new HashEntry("isOnline",true),
+                
 				
              });
 			 await db.StringSetAsync($"user:{id}:unreadNots","0");
@@ -324,6 +325,17 @@ namespace back
             var nextId = await db.StringIncrementAsync("total_users");
             return nextId;
 
+        }
+
+        private async Task SetUserOnline(long userId)
+        {
+            var db = _redis.GetDatabase();
+            await db.StringSetAsync($"user:{userId}:online", "true");
+            await db.KeyExpireAsync($"user:{userId}:online", TimeSpan.FromMinutes(10));
+            await db.HashSetAsync($"user:{userId}", new HashEntry[]
+            {
+                new HashEntry("lastSeen",DateTime.Now.ToString("MM/dd/yyyy HH:mm"))
+            });
         }
 
     }

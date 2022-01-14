@@ -1,11 +1,16 @@
+import moment from 'moment'
 import React,{useState} from "react"
-
-import {ChatContainer,ConversationHeader,Avatar,InfoButton,MessageList,Message,MessageSeparator,MessageInput} from  "@chatscope/chat-ui-kit-react";
+import ChatMessage from './ChatMessage'
+import {ChatContainer,ConversationHeader,Avatar,InfoButton,MessageList,Message,MessageSeparator,Status,MessageInput} from  "@chatscope/chat-ui-kit-react";
 import alt from "../../altAvatar.png"
 
-export function Convo({me,friend,messages,addNewMessage,friendSrc}){
+export function Convo({me,friend,messages,addNewMessage,friendSrc,friendOnline,friendLastSeen}){
 
     const [myMessage,setMyMessage]=useState("")
+    console.log(friendOnline)
+    console.log(friendLastSeen)
+    const status=friendOnline?'available':(friendLastSeen?'away':'unavailable')
+    const lastSeen=friendOnline?'Active Now':(status==='away'?'Last seen: '+moment(Date.parse(friendLastSeen)).fromNow():'Offline')
     const slikaSrc=friendSrc?friendSrc:alt
     const provera=(event)=>{
         setMyMessage(event)
@@ -17,7 +22,10 @@ export function Convo({me,friend,messages,addNewMessage,friendSrc}){
             message:myMessage,
             usernameFrom:me,
             usernameTo:friend,
-            date:(new Date().valueOf()).toString()
+            date:(new Date().valueOf()).toString(),
+            isFriendOnline:friendOnline,
+            friendLastSeen:friendLastSeen
+            
         }
       addNewMessage(novaPoruka)
       setMyMessage("")
@@ -26,8 +34,9 @@ export function Convo({me,friend,messages,addNewMessage,friendSrc}){
    return  <ChatContainer>
       <ConversationHeader>
                     <ConversationHeader.Back />
-                    <Avatar src={slikaSrc}  name={friend} />
-                    <ConversationHeader.Content userName={friend} info="Active 10 mins ago" />
+                    <Avatar src={slikaSrc}  name={friend} status={status} />
+                    <Status status={status} />
+                    <ConversationHeader.Content userName={friend} info={lastSeen} status={status} />
                     <ConversationHeader.Actions>
                     
                       <InfoButton />
@@ -35,10 +44,11 @@ export function Convo({me,friend,messages,addNewMessage,friendSrc}){
                   </ConversationHeader>
         <MessageList>
         {messages.map((message,index)=>{
+          
             const direction=message.usernameFrom===me?"outgoing":"incoming"
-            return <Message key={index} model={{message:message.message,sentTime:new Date(Number(message.date)).toLocaleString(),sender:friend,direction:direction,position:"single"}} avatarSpacer>
-
-            </Message>
+            return <ChatMessage key={index} message={message} friend={friend} me={me} avatarSpacer>
+          
+            </ChatMessage>
         })}
       
                   

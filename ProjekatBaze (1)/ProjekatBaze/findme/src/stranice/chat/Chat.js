@@ -18,7 +18,8 @@ export function Chat({newConnection}){
   //const [friendSrc,setFriendSrc]=useState("")
   const [first,setFirst]=useState(true)
   const [state,dispatch]=useContext(Context);
-  
+  console.log(state.riendOnline)
+  console.log(state.friendLastSeen)
   //const [myMessage,setMyMessage]=useState("")
   const compareMessages=(m1,m2)=>{
     if(Number(m1.date)>Number(m2.date))
@@ -48,6 +49,8 @@ export function Chat({newConnection}){
     console.log(state.friend)
    // setFriendSrc(poruke[0].slikaSrc)
     dispatch({type:'SET_FRIEND_SRC',payload:poruke[0].slikaSrc});
+    dispatch({type:'SET_FRIEND_ONLINE',payload:poruke[0].isFriendOnline});
+    dispatch({type:'SET_FRIEND_LAST_SEEN',payload:poruke[0].friendLastSeen});
     setFirst(false)
     }
   }
@@ -58,6 +61,8 @@ export function Chat({newConnection}){
       console.log('povezano')
    
       newConnection.on('ReceiveMessage',message=>{
+              message.isFriendOnline=true
+              dispatch({type:'SET_FRIEND_ONLINE',payload:true});
              console.log(message)
                if(message.usernameFrom===state.friend)
                   setMessages(prevState=>[...prevState,message])
@@ -115,7 +120,8 @@ export function Chat({newConnection}){
     return <div style={{ position: "relative", height: "520px" }}>
     <MainContainer responsive>
     <ChatsList me={localStorage.getItem("username")} poruke={convoList} />
-    <Convo friendSrc={state.friendSrc} me={localStorage.getItem("username")} friend={state.friend} messages={messages} addNewMessage={addNewMessage}/>
+    <Convo friendSrc={state.friendSrc} me={localStorage.getItem("username")} friend={state.friend} messages={messages} addNewMessage={addNewMessage}
+    friendOnline={state.friendOnline} friendLastSeen={state.friendLastSeen}/>
     <ChatSidebar />
     </MainContainer>
   </div>;

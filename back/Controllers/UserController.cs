@@ -75,6 +75,8 @@ namespace back
 
                 });
 				 var db = _redis.GetDatabase();
+                   long id = (long)await db.StringGetAsync($"username:{username}");
+                 await SetUserOnline(id);
 				if(await db.KeyExistsAsync($"neo4juser:{username}")){
 					 
 				var user = JsonConvert.DeserializeObject<UserWithRelationships>(await db.StringGetAsync($"neo4juser:{username}"));
@@ -108,6 +110,8 @@ namespace back
             if (await db.KeyExistsAsync($"neo4juser:{username}"))
             {
                 var user = JsonConvert.DeserializeObject<UserWithRelationships>(await db.StringGetAsync($"neo4juser:{username}"));
+				 user.User.ProfilnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "ProfilnaSrc");
+				  user.User.NaslovnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "naslovnaSrc");
               
                 return Ok(user);
             }
@@ -136,8 +140,9 @@ namespace back
                 });
                 Console.WriteLine(result.ToString());
                 var user=JsonConvert.DeserializeObject<UserWithRelationships>(result);
-
-                await db.StringSetAsync($"neo4juser:{username}", result);
+                 user.User.ProfilnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "ProfilnaSrc");
+				  user.User.NaslovnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "naslovnaSrc");
+                await db.StringSetAsync($"neo4juser:{username}", JsonConvert.SerializeObject(user));
                 ISubscriber sub = _redis.GetSubscriber();
                 await sub.SubscribeAsync($"channel:{username}", async (channel, message) =>
                 {
@@ -173,8 +178,10 @@ namespace back
             users.ForEach(async user =>
             {
                 user.ProfilnaSrc = await db.HashGetAsync($"user:{user.Id}", "ProfilnaSrc");
-                Console.WriteLine(user.ProfilnaSrc);
-                Console.WriteLine($"user:{user.Id}");
+                user.LastSeen = await db.HashGetAsync($"user:{user.Id}", "lastSeen");
+                if (await db.KeyExistsAsync($"user:{user.Id}:online"))
+                    user.IsOnline = true;
+                else user.IsOnline = false;
             });
             // return Ok(JsonConvert.DeserializeObject<Neo4jUser>(result));
            // Console.WriteLine()
@@ -257,6 +264,7 @@ namespace back
             }
             //var nextId = await db.StringIncrementAsync("total_users");
             string userKey = $"user:{user.User.Id}";
+            await SetUserOnline(long.Parse(user.User.Id));
             //await db.StringSetAsync(usernameKey, id);
             await db.HashSetAsync(userKey, new HashEntry[]
             {
@@ -390,6 +398,17 @@ namespace back
             
 
 
+        }
+
+        private async Task SetUserOnline(long userId)
+        {
+            var db = _redis.GetDatabase();
+            await db.StringSetAsync($"user:{userId}:online", "true");
+            await db.KeyExpireAsync($"user:{userId}:online", TimeSpan.FromMinutes(10));
+            await db.HashSetAsync($"user:{userId}", new HashEntry[]
+            {
+                new HashEntry("lastSeen",DateTime.Now.ToString("MM/dd/yyyy HH:mm"))
+            });
         }
 
 

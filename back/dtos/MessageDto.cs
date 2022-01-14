@@ -13,6 +13,10 @@ namespace backend.dtos
         public string UsernameFrom { get; set; }
 		//slika sagovornika
 		public string SlikaSrc{get;set;}
+        //
+        public bool IsFriendOnline { get; set; }
+
+        public string FriendLastSeen { get; set; }
 
 
     }

@@ -50,7 +50,7 @@ export default function Topbar(props) {
     }
   ]*/
    const [podaci,setPodaci]= useState([])
-   const [profilnaSrc,setProfilnaSrc]=useState('/slike/profil.jpg')
+   const [profilnaSrc,setProfilnaSrc]=useState(localStorage.getItem("profilna"))
    const [prikaziDiv,setPrikaziDiv]=useState(false)
    const [pretraga,setPretraga]=useState([])
    const [pretrazi,setPretrazi] =useState("")
@@ -134,7 +134,7 @@ const [isLogged,setIsLogged]=useState(true)
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-dots-fill ikonicaBar" viewBox="0 0 16 16">
           <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
          </svg>
-            <span className="topbarIconBadge">2</span>
+          
             </NavLink>
           </div>
         
@@ -147,13 +147,17 @@ const [isLogged,setIsLogged]=useState(true)
         const changeFriend=()=>{
           dispatch({type:'SET_FRIEND',payload:obv.username});
           dispatch({type:'SET_FRIEND_SRC',payload:obv.profilnaSrc});
+          dispatch({type:'SET_FRIEND_ONLINE',payload:obv.isOnline});
+          dispatch({type:'SET_FRIEND_LAST_SEEN',payload:obv.lastSeen});
           setPrikaziDiv(false)
           navigate('/Chat')
 
         }
           return ( <div className= 'divPratilacGlavnii'>
                 <div className='divPratilacPretraga'>
+                  <NavLink to={'/profil/'+obv.username}>
                <img alt="" src={obv.profilnaSrc} className='imgPratilacc' key={i}/>
+               </NavLink>
                <label  className='lblPratilac' key={i+999999}>{obv.ime} {obv.prezime}</label>
                </div>
                <svg onClick={changeFriend} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat-left-dots-fill ikonicaBar" viewBox="0 0 16 16">

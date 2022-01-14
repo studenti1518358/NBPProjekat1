@@ -18,7 +18,8 @@ import {
     useEffect(() => {
        
        
-        fetch("http://localhost:5000/api/User/all Users").then(pod=>{
+        fetch("http://localhost:5000/api/User/AllUsers").then(pod=>{
+          if(pod){
                   pod.json().then(obv=>{
                    
                     
@@ -26,7 +27,7 @@ import {
                   
    
                    })
-              })
+         } })
       
      },[])
 
@@ -34,6 +35,8 @@ import {
         const changeFriend=()=>{
             dispatch({type:'SET_FRIEND',payload:user.username});
             dispatch({type:'SET_FRIEND_SRC',payload:user.profilnaSrc});
+            dispatch({type:'SET_FRIEND_ONLINE',payload:user.isOnline});
+            dispatch({type:'SET_FRIEND_LAST_SEEN',payload:user.lastSeen});
            
   
           }

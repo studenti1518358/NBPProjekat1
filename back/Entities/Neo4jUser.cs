@@ -36,5 +36,8 @@ namespace back.entities
 
         public string TipVeze { get; set; }
 
+        public bool IsOnline { get; set; }
+        public string LastSeen { get; set; }
+
     }
 }

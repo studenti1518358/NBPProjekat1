@@ -2,7 +2,7 @@ import React,{useEffect,useState} from 'react'
 import './Informacije.css'
 import {useParams} from 'react-router-dom'
 export default function Informacije() {
-  // const [informacije,setInformacije]=useState([])
+ 
    const [ime,setIme] =useState("")
    const [slika,setSlika]=useState("")
    const [prezime,setPrezime] =useState("")
@@ -22,7 +22,7 @@ export default function Informacije() {
    const [ociPartnera,setOciPartnera] =useState("")
    const [visinaPartnera,setVisinaPartnera] =useState(0)
    const [podaci,setPodaci]=useState({})
-
+   const [prikazLabele,setPrikazLabele]=useState(true)
    const {username}=useParams()
    const myProfile=username===localStorage.getItem("username")?true:false;
    const update=async()=>{
@@ -116,7 +116,10 @@ export default function Informacije() {
    }
 
     useEffect(() => {
-           
+           if(username===localStorage.getItem("username"))
+           {
+              setPrikazLabele(false)
+           }
         fetch("http://localhost:5000/api/User/GetUser/"+username, {
           headers:{'Content-Type':'application/json'},
           credentials:'include'
@@ -151,26 +154,26 @@ export default function Informacije() {
         <div className="divGlavniInformacije">
             <div className='divInfoPrvi'>
                 <img src={slika }alt="" className="profilnaInfo"></img>
-                <label className='lblInfo'>Ime: <input onChange={(e)=>setIme(e.target.value)} value= {ime} className='infoInput'/></label>
-                <label className='lblInfo'>Prezime: <input onChange={(e)=>setPrezime(e.target.value)} value= {prezime} className='infoInput'/></label>
-                <label className='lblInfo'>Godine: <input onChange={(e)=>setGodine(e.target.value)} value= {godine} className='infoInput'/></label>
-                <label className='lblInfo'>Mesto stanovanja: <input onChange={(e)=>setGrad(e.target.value)} value= {grad} className='infoInput'/></label>
-                <label className='lblInfo'>Status veze: <input onChange={(e)=>setStatus(e.target.value)} value= {status} className='infoInput'/></label>
-                <label className='lblInfo'>Zanimanje: <input onChange={(e)=>setZanimanje(e.target.value)} value= {zanimanje} className='infoInput'/></label>
-                <label className='lblInfo'>Trazi: <input onChange={(e)=>setTrazi(e.target.value)} value= {trazi} className='infoInput'/></label>
+                <label className='lblInfo'>Ime: {prikazLabele? <label className='pomLabInput'>  {ime} </label> : <input onChange={(e)=>setIme(e.target.value)} value= {ime} className='infoInput'/> } </label>
+                <label className='lblInfo'>Prezime: {prikazLabele? <label className='pomLabInput'>  {prezime} </label> :  <input onChange={(e)=>setPrezime(e.target.value)} value= {prezime} className='infoInput'/>}</label>
+                <label className='lblInfo'>Godine: {prikazLabele? <label className='pomLabInput'>  {godine} </label> : <input onChange={(e)=>setGodine(e.target.value)} value= {godine} className='infoInput'/>}</label>
+                <label className='lblInfo'>Mesto stanovanja: {prikazLabele? <label className='pomLabInput'>  {grad} </label> :  <input onChange={(e)=>setGrad(e.target.value)} value= {grad} className='infoInput'/>}</label>
+                <label className='lblInfo'>Status veze: {prikazLabele? <label className='pomLabInput'>  {status} </label> :  <input onChange={(e)=>setStatus(e.target.value)} value= {status} className='infoInput'/>}</label>
+                <label className='lblInfo'>Zanimanje: {prikazLabele? <label className='pomLabInput'>  {zanimanje} </label> :  <input onChange={(e)=>setZanimanje(e.target.value)} value= {zanimanje} className='infoInput'/>}</label>
+                <label className='lblInfo'>Trazi: {prikazLabele? <label className='pomLabInput'>  {trazi} </label> :  <input onChange={(e)=>setTrazi(e.target.value)} value= {trazi} className='infoInput'/>}</label>
             </div>
 
             <div className='divInfoPrvi'>
                 <h4>Dodatne informacije:</h4>
                 <label>          </label>
                 <label>          </label>
-                <label className='lblInfo'>Boja kose: <input onChange={(e)=>setKosa(e.target.value)} value= {kosa} className='infoInput'/></label>
-                <label className='lblInfo'>Boja ociju: <input onChange={(e)=>setOci(e.target.value)} value= {oci} className='infoInput'/></label>
-                <label className='lblInfo'>Visina: <input onChange={(e)=>setVisina(e.target.value)} value= {visina} className='infoInput'/> </label>
-                <label className='lblInfo'>Hobi: <input onChange={(e)=>setHobi(e.target.value)} value= {hobi} className='infoInput'/></label>
-                <label className='lblInfo'>Omiljeni zanr muzike: <input onChange={(e)=>setMuzika(e.target.value)} value= {muzika} className='infoInput'/></label>
-                <label className='lblInfo'>Omiljeni film: <input onChange={(e)=>setFilm(e.target.value)} value= {film} className='infoInput'/></label>
-                <label className='lblInfo'>Omiljena knjiga: <input onChange={(e)=>setKnjiga(e.target.value)} value= {knjiga} className='infoInput'/></label>
+                <label className='lblInfo'>Boja kose: {prikazLabele? <label className='pomLabInput'>  {kosa} </label> :   <input onChange={(e)=>setKosa(e.target.value)} value= {kosa} className='infoInput'/>}</label>
+                <label className='lblInfo'>Boja ociju: {prikazLabele? <label className='pomLabInput'>  {oci} </label> :  <input onChange={(e)=>setOci(e.target.value)} value= {oci} className='infoInput'/>}</label>
+                <label className='lblInfo'>Visina: {prikazLabele? <label className='pomLabInput'>  {visina} </label> :  <input onChange={(e)=>setVisina(e.target.value)} value= {visina} className='infoInput'/>} </label>
+                <label className='lblInfo'>Hobi: {prikazLabele? <label className='pomLabInput'>  {hobi} </label> :  <input onChange={(e)=>setHobi(e.target.value)} value= {hobi} className='infoInput'/>}</label>
+                <label className='lblInfo'>Omiljeni zanr muzike: {prikazLabele? <label className='pomLabInput'>  {muzika} </label> :  <input onChange={(e)=>setMuzika(e.target.value)} value= {muzika} className='infoInput'/>}</label>
+                <label className='lblInfo'>Omiljeni film: {prikazLabele? <label className='pomLabInput'>  {film} </label> :  <input onChange={(e)=>setFilm(e.target.value)} value= {film} className='infoInput'/>}</label>
+                <label className='lblInfo'>Omiljena knjiga: {prikazLabele? <label className='pomLabInput'>  {knjiga} </label> :  <input onChange={(e)=>setKnjiga(e.target.value)} value= {knjiga} className='infoInput'/>}</label>
                 
             </div>
 
@@ -178,9 +181,9 @@ export default function Informacije() {
                 <h4>Od partnera očekuje:</h4>
                 <label>          </label>
                 <label>          </label>
-                <label className='lblInfo'>Boja kose: <input onChange={(e)=>setKosaPartnera(e.target.value)} value= {kosaPartnera} className='infoInput'/> </label>
-                <label className='lblInfo'>Boja ociju: <input onChange={(e)=>setOciPartnera(e.target.value)} value= {ociPartnera} className='infoInput'/> </label>
-                <label className='lblInfo'>Visina:  <input onChange={(e)=>setVisinaPartnera(e.target.value)} value={visinaPartnera} className='infoInput'/> </label>
+                <label className='lblInfo'>Boja kose: {prikazLabele ? <label className='pomLabInput'>  {kosaPartnera} </label> :  <input onChange={(e)=>setKosaPartnera(e.target.value)} value= {kosaPartnera} className='infoInput'/> }</label>
+                <label className='lblInfo'>Boja ociju: {prikazLabele? <label className='pomLabInput'>  {ociPartnera} </label> :  <input onChange={(e)=>setOciPartnera(e.target.value)} value= {ociPartnera} className='infoInput'/> }</label>
+                <label className='lblInfo'>Visina: {prikazLabele? <label className='pomLabInput'>  {visinaPartnera} </label> :   <input onChange={(e)=>setVisinaPartnera(e.target.value)} value={visinaPartnera} className='infoInput'/> }</label>
                 <div className='divDugmeInfo'>
                 <button className='btn btn-info dugmeInformacije' onClick={update}> Izmeni</button>
                 </div>

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using back.hubs;
 using Microsoft.AspNetCore.SignalR;
 using back.hubs.clients;
-
+//kontroler za cet  i poruke
 namespace back
 {
     [Route("api/[controller]")]
@@ -31,36 +31,7 @@ namespace back
 
        
 
-        [Route("register")]
-        [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody] UserDto user)
-        {
-            string usernameKey = $"username:{user.Username}";
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            var db = _redis.GetDatabase();
-            if(await db.KeyExistsAsync(usernameKey))
-            {
-                return BadRequest("Username already exists");
-            }
-            var nextId = await db.StringIncrementAsync("total_users");
-            string userKey = $"user:{nextId}";
-            await db.StringSetAsync(usernameKey, nextId);
-            await db.HashSetAsync(userKey, new HashEntry[]
-            {
-                new HashEntry("username",user.Username),
-                new HashEntry("password",hashedPassword)
-            });
-            User newUser=new entities.User();
-            newUser.Id = nextId;
-            newUser.isOnline = true;
-            newUser.Username = user.Username;
-            newUser.Password = hashedPassword;
-
-
-            return Ok(newUser);
-
-
-        }
+       
         [HttpPost]
         [Route("sendMessage")]
         public async Task<IActionResult> SendMessage([FromBody]ChatMessage message)

@@ -3,6 +3,7 @@ import {useState,useEffect} from 'react'
 import { CustomDialog, useDialog } from 'react-st-modal';
 import LikesDialog from "./likesDialog";
 import {useNavigate} from 'react-router-dom'
+import alt from "../altAvatar.png"
 
 export default function Komentar({komentar}){
     const navigate=useNavigate()
@@ -48,7 +49,7 @@ export default function Komentar({komentar}){
       }
     return(
         <Comment className='komentar'>
-            <Comment.Avatar className='commentAvatar' src={komentar.autorSrc}/>
+            <Comment.Avatar onClick={()=>navigate('/profil/'+komentar.authorUsername)} className='commentAvatar' src={komentar.autorSrc?komentar.autorSrc:alt}/>
             <Comment.Content>
                 <Comment.Author onClick={()=>navigate('/profil/'+komentar.authorUsername)} as='a'>{komentar.authorUsername}</Comment.Author>
                 <Comment.Metadata><div>{komentar.date}</div></Comment.Metadata>

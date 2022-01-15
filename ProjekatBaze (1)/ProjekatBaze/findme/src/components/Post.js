@@ -3,9 +3,12 @@ import { useState,useEffect } from "react"
 import { CustomDialog, useDialog } from 'react-st-modal';
 import LikesDialog from "./likesDialog";
 import CommentSection from "./CommentSection";
+import {useNavigate} from 'react-router-dom'
+import alt from "../altAvatar.png"
 
 
 export default function Post({post}) {
+  const navigate=useNavigate()
   const [like,setLike] = useState(0)
   const [isLiked,setIsLiked] = useState(false)
   const [likes,setLikes]=useState([])
@@ -63,8 +66,9 @@ export default function Post({post}) {
           <div className="postTopLeft">
             <img
               className="postProfileImg"
-              src={post.autorSrc}
+              src={post.autorSrc?post.autorSrc:alt}
               alt=""
+              onClick={()=>navigate('/profil/'+post.authorUsername)}
             />
             <span className="postUsername">
              {post.authorUsername}

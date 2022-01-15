@@ -111,8 +111,10 @@ export default function Informacije() {
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify(izmenjenUser)
        })
-       console.log(await result.json())
+       console.log(result)
        console.log(izmenjenUser)
+       if(result.status===200)
+         window.location.reload()
    }
 
     useEffect(() => {
@@ -185,7 +187,7 @@ export default function Informacije() {
                 <label className='lblInfo'>Boja ociju: {prikazLabele? <label className='pomLabInput'>  {ociPartnera} </label> :  <input onChange={(e)=>setOciPartnera(e.target.value)} value= {ociPartnera} className='infoInput'/> }</label>
                 <label className='lblInfo'>Visina: {prikazLabele? <label className='pomLabInput'>  {visinaPartnera} </label> :   <input onChange={(e)=>setVisinaPartnera(e.target.value)} value={visinaPartnera} className='infoInput'/> }</label>
                 <div className='divDugmeInfo'>
-                <button className='btn btn-info dugmeInformacije' onClick={update}> Izmeni</button>
+                {!prikazLabele && <button className='btn btn-info dugmeInformacije' onClick={update}> Izmeni</button>}
                 </div>
             </div>
 

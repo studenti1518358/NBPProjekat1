@@ -22,17 +22,17 @@ namespace back
         private readonly IDriver _driver;
        
 
-        private readonly IConnectionMultiplexer _redis;
+        private readonly  IConnectionMultiplexer _redis;
         public  UserController(IConnectionMultiplexer redis)
         {
             _driver = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "admin"));
             _redis = redis;
-			sub();
+			
 			
 
           
         }
-		private async void sub()
+		private async Task sub()
 		{
 			 var db = _redis.GetDatabase();
 			var cashedUsers=await db.SetMembersAsync($"neoCash");
@@ -75,6 +75,7 @@ namespace back
 
                 });
 				 var db = _redis.GetDatabase();
+				 await sub();
                    long id = (long)await db.StringGetAsync($"username:{username}");
                  await SetUserOnline(id);
 				if(await db.KeyExistsAsync($"neo4juser:{username}")){
@@ -85,33 +86,29 @@ namespace back
 				   ISubscriber sub = _redis.GetSubscriber();
                 string pubKey = $"channel:{username}";
                 await sub.PublishAsync(pubKey, JsonConvert.SerializeObject(user));
-				await db.StringSetAsync($"neo4juser:{username}", JsonConvert.SerializeObject(user));
+				//await db.StringSetAsync($"neo4juser:{username}", JsonConvert.SerializeObject(user));
 				}
               
 			return Ok();
 	   }
 
+		//pribavlja korisnika iz neo4j baze sa svim njegovim osobinama i interesovanjima, prvo proverava da li je korisnik u redis kesu, pa //ako nije pribavlja ga iz neo4j i upisuje u kes
         [HttpGet]
         [Route("GetUser/{username}")]
         public async Task<IActionResult> GetUser(string username)
         {
             var db = _redis.GetDatabase();
+			 if (!await db.KeyExistsAsync($"username:{username}"))
+                return BadRequest("User doesnt exist");
+			await sub();
             //
-            ISubscriber subb = _redis.GetSubscriber();
-			await db.SetAddAsync($"neoCash",username);
-            await subb.SubscribeAsync($"channel:{username}", async (channel, message) =>
-            {
-                await db.StringSetAsync($"neo4juser:{username}", message);
-				
-				Console.WriteLine("cao");
-
-            });
+           
             //
             if (await db.KeyExistsAsync($"neo4juser:{username}"))
             {
                 var user = JsonConvert.DeserializeObject<UserWithRelationships>(await db.StringGetAsync($"neo4juser:{username}"));
 				 user.User.ProfilnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "ProfilnaSrc");
-				  user.User.NaslovnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "naslovnaSrc");
+				  user.User.NaslovnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "NaslovnaSrc");
               
                 return Ok(user);
             }
@@ -138,11 +135,12 @@ namespace back
                     //return record[0];
 
                 });
-                Console.WriteLine(result.ToString());
+               
                 var user=JsonConvert.DeserializeObject<UserWithRelationships>(result);
                  user.User.ProfilnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "ProfilnaSrc");
-				  user.User.NaslovnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "naslovnaSrc");
+				  user.User.NaslovnaSrc = await db.HashGetAsync($"user:{user.User.Id}", "NaslovnaSrc");
                 await db.StringSetAsync($"neo4juser:{username}", JsonConvert.SerializeObject(user));
+				await db.SetAddAsync($"neoCash",username);
                 ISubscriber sub = _redis.GetSubscriber();
                 await sub.SubscribeAsync($"channel:{username}", async (channel, message) =>
                 {
@@ -190,12 +188,14 @@ namespace back
 
 		}
 
+		//za datog korisnika na osnovu njrgovih osobina pronalazi korisnike sa najvise istih osobina i interesovanja, sortirane u opadajucem
+		//redosledu prema broju interesovanja koja dele sa darim korisnikom
         [HttpGet]
         [Route("matches")]
-        public async Task<IActionResult> nadjiPartnera(string username)
+        public async Task<IActionResult> nadjiPartnere(string username)
         {
             var statementText = new StringBuilder();
-            statementText.Append($"MATCH (n:User {{username:$username}}) WITH  n  MATCH (n:User)-[:INTERESUJEME | TRAZIM | ZIVIM]->(i)<-[:INTERESUJEME | POSEDUJE | ZIVIM]-(m:User) WHERE m.username<>$username WITH distinct m, count(i) as x RETURN properties(m) ORDER by x desc");
+            statementText.Append($"MATCH (n:User {{username:$username}}) WITH  n  MATCH (n:User)-[:INTERESUJEME | TRAZIM | ZIVIM]->(i)<-[:INTERESUJEME | POSEDUJE | ZIVIM]-(m:User) WHERE m.username<>$username and n.godineOd<=m.godine and n.godineDo>=m.godine WITH distinct m, count(i) as x RETURN properties(m) ORDER by x desc");
             var statementParameters = new Dictionary<string, object>
         {
             {"username", username }
@@ -235,6 +235,7 @@ namespace back
         public async Task<IActionResult> UpdateUser(string username,UserWithRelationships user)
         {
             var db =  _redis.GetDatabase();
+			await sub();
             if (!await db.KeyExistsAsync($"username:{username}"))
                 return BadRequest("User doesnt exist");
             try

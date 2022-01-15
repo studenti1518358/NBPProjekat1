@@ -89,7 +89,7 @@ console.log(connection)
         <Route path='/Pratioci/:username' element={<Pratioci/>}/>
         <Route path='/Prati/:username' element={<Prati/>}/>
         <Route path='/UspesnoRegistrovanje' element={<UspesnoRegistrovanje/>}/>
-        <Route path='/Profil' element={<Profil/>}/>
+        <Route path='/MojProfil' element={<Profil/>}/>
         <Route path='/profil/:username' element={<TudjProfil />} />
         <Route path='/PocetnaStrana' element={<Novosti/>}/>
         <Route path='/Predlozi/*' element={<Predlozi/>}/>

@@ -98,7 +98,7 @@ const Navbar = () => {
               <div className="right"></div>
             </div>
             <li className="nav-item active">
-              <NavLink className="nav-link" to={"/Profil/"+localStorage.getItem("username")}>
+              <NavLink className="nav-link" to={"/MojProfil"}>
                Profil 
               </NavLink>
              

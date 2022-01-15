@@ -75,7 +75,7 @@ namespace back
             });
             //uklanjanje komentara iz objave
             string komentariKey = $"objava:{objavaId}:komentari";
-            await db.ListRemoveAsync(komentariKey, commentId);
+            await db.ListRemoveAsync(komentariKey, commentId,1);
             //brisanje lajkova komentara
             string lajkoviKey = $"komentar:{commentId}:lajkovi";
             await db.ListTrimAsync(lajkoviKey, 99, 0);
@@ -207,7 +207,7 @@ namespace back
             string lajkoviKey = $"objava:{objavaId}:lajkovi";
             await db.ListTrimAsync(lajkoviKey, 99, 0);
             //brisanje id-ja objave iz liste objava autora
-            await db.ListRemoveAsync($"user:{autorId}:objave", objavaId);
+            await db.ListRemoveAsync($"user:{autorId}:objave", objavaId,1);
             //brisanje objave sa zidova pratioca autora
             var pratioci = await db.SetMembersAsync($"user:{autorId}:followers");
             foreach(var pratilacId in pratioci)

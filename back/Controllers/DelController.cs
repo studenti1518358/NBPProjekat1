@@ -258,6 +258,7 @@ namespace back
             await db.SetRemoveAsync($"user:{id2}:rooms", roomKey);
         }
 
+       
         private async Task DeleteNotifications(string username,ITransaction db)
         {
             //var db = _redis.GetDatabase();
@@ -270,7 +271,27 @@ namespace back
             int userId = (int)await db.StringGetAsync($"username:{username}");
             string notifikactionsKey = $"user:{userId}:notifications";
             await db.ListTrimAsync(notifikactionsKey, 99, 0);
+			
+			
         }
+		
+		 [HttpDelete]
+		[Route("obrisiNotifikacije/{username}")]
+		  public async Task<IActionResult>  DeleteNotifications(string username)
+		  {
+			  var db = _redis.GetDatabase();
+
+            if (await db.KeyExistsAsync($"username:{username}") == false )
+            {
+                return BadRequest(" usernam is non-existing");
+            }
+
+            int userId = (int)await db.StringGetAsync($"username:{username}");
+            string notifikactionsKey = $"user:{userId}:notifications";
+            await db.ListTrimAsync(notifikactionsKey, 99, 0);
+			return Ok();
+		  }
+		
 
         private async Task DeleteUserPhotos(string username,ITransaction db)
         {

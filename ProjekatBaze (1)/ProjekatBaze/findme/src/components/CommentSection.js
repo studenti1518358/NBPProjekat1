@@ -3,7 +3,9 @@ import Komentar from './Comment'
 import {useState,useEffect} from 'react'
 import './Komentari.css'
 
+
 export default function CommentSection({komentari,postId,setShow,setCommentsNum}){
+   
     const [kom,setNoviKomentar]=useState("")
     const [Komentari,setKomentari]=useState([])
     const closeComments=()=>{

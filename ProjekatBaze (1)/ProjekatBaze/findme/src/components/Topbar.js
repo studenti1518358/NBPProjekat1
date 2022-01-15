@@ -72,6 +72,9 @@ export default function Topbar(props) {
            })
           
   },[])
+  useEffect(()=>{
+    setProfilnaSrc(localStorage.getItem("profilna"))
+  },[state])
 const [isLogged,setIsLogged]=useState(true)
 
  const  pretrazii=(e)=>

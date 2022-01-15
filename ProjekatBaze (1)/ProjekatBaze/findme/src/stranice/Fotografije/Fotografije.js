@@ -21,16 +21,13 @@ export default function Fotografije() {
 
         },[])
     
-    const ObrisiSliku=(src)=>{
+    const ObrisiSliku=async (src)=>{
        fetch("http://localhost:5000/api/Del/deletePhoto/"+localStorage.getItem("username"),{
             method:"DELETE",
             headers:{'Content-Type':'application/json'},
-            body:src.src/*JSON.stringify(
-                {
-                  src:src.src.toString()
-                }
-              )*/
-            }).then(p=>{
+            body:JSON.stringify(src.src)
+            }).then(async p=>{
+               // console.log(await p.json())
                 if(p.ok)
                 {
                     window.location.reload()

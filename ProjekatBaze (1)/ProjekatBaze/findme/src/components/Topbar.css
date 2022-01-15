@@ -176,3 +176,21 @@ topbarContainerGlavni
   background-color: yellow !important;
 }
 
+.delNots{
+  background-color:grey;
+  text-align: center;
+  padding: 10px;
+  border-radius: 7px;
+}
+.delNots:hover{
+  background-color: rgb(199, 197, 197);
+}
+.nemaNots{
+
+  background-color: hotpink;
+  text-align: center;
+  padding: 2px;
+  border-radius: 7px;
+}
+
+

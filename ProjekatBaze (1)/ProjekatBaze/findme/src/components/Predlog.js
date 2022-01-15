@@ -2,7 +2,9 @@ import React from 'react'
 import './Predlog.css'
 import {NavLink} from 'react-router-dom'
 import {Confirm} from 'react-st-modal'
+import {useNavigate} from 'react-router-dom'
 export default function Predlog({korisnik,indeks}) {
+    const navigate=useNavigate()
     const sledeci=indeks+1;
     const zaprati=async()=>{
         const response=await fetch("http://localhost:5000/api/Objave/subscribe?usernamePub="+korisnik.username+"&usernameSub="+localStorage.getItem("username"))
@@ -33,8 +35,7 @@ export default function Predlog({korisnik,indeks}) {
 
                <div className='divPredlogOpisPom'>                 
                <h4>Opis:</h4>
-               <label className='lblPreglogOpis'> Zdravo svima, ako ste za neobavezno druzenje i dopisivanje posalji zahtev i javi se.
-                Ja sam diplomirani pravnik u potrazi za poslom i novom devojkom. Blablablabla
+               <label className='lblPreglogOpis'> {korisnik.opis?korisnik.opis:'/'}
                 </label>
                 </div> 
                 <div className='divPredlogDugmici'>
@@ -44,7 +45,8 @@ export default function Predlog({korisnik,indeks}) {
                  Zaprati
                 </button>
                 <button
-                className='btnPocetna'               
+                className='btnPocetna'  
+                onClick={()=>navigate('/profil/'+korisnik.username)}             
                >
                 Poseti profil          
                </button>

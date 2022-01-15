@@ -2,8 +2,10 @@ import {Button,Comment} from 'semantic-ui-react'
 import {useState,useEffect} from 'react'
 import { CustomDialog, useDialog } from 'react-st-modal';
 import LikesDialog from "./likesDialog";
+import {useNavigate} from 'react-router-dom'
 
 export default function Komentar({komentar}){
+    const navigate=useNavigate()
     const [likesTotal,setLikesTotal]=useState(0)
     const [isLiked,setIsLiked]=useState(false)
     const [likes,setLikes]=useState([])
@@ -48,7 +50,7 @@ export default function Komentar({komentar}){
         <Comment className='komentar'>
             <Comment.Avatar className='commentAvatar' src={komentar.autorSrc}/>
             <Comment.Content>
-                <Comment.Author as='a'>{komentar.authorUsername}</Comment.Author>
+                <Comment.Author onClick={()=>navigate('/profil/'+komentar.authorUsername)} as='a'>{komentar.authorUsername}</Comment.Author>
                 <Comment.Metadata><div>{komentar.date}</div></Comment.Metadata>
                 <Comment.Text>{komentar.text}</Comment.Text>
                 <Comment.Actions>

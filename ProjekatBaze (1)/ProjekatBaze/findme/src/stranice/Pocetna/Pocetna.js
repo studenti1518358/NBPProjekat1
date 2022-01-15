@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import './Pocetna.css'
 import {useNavigate} from "react-router-dom"
 export default function Pocetna() {
@@ -11,6 +11,9 @@ export default function Pocetna() {
   {
     navigate("/registracija/registrujSe")
   }
+  useEffect(()=>{
+  if(localStorage.getItem("username"))
+        navigate("/PocetnaStrana") },[])
     return (
         <div className='pocetna-container'>
         <div className='NaslovDiv'>

@@ -40,24 +40,26 @@ export default function PrijaviSe({setUsernam}) {
       const body=await response1.json()
       console.log(body)
       localStorage.setItem("username",body.username)
-      dispatch({type:'SET_USER',payload:body});
+    
       setUsernam(body.username)
      
       
-      fetch("http://localhost:5000/api/Auth/getUser", {
+     const korisnik=await fetch("http://localhost:5000/api/Auth/getUser", {
         headers:{'Content-Type':'application/json'},
         credentials:'include'
-      }).then(korisnik=>{
+      })
 
-         korisnik.json().then(podaci=>{
-         
+      
+
+      const podaci=await korisnik.json()
+        
+          
            
-            
-             localStorage.setItem("profilna",podaci.profilnaSrc)
-             localStorage.setItem("username",podaci.username)
-                              
-         })
-    })
+            localStorage.setItem("profilna",podaci.profilnaSrc)
+            localStorage.setItem("username",podaci.username)
+                             
+           console.log(state)
+           dispatch({type:'SET_USER',payload:body});
       setRedirect(true)
 
         

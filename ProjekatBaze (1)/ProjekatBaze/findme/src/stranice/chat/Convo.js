@@ -3,10 +3,12 @@ import React,{useState} from "react"
 import ChatMessage from './ChatMessage'
 import {ChatContainer,ConversationHeader,Avatar,InfoButton,MessageList,Message,MessageSeparator,Status,MessageInput} from  "@chatscope/chat-ui-kit-react";
 import alt from "../../altAvatar.png"
+import {useNavigate} from 'react-router-dom'
 
 export function Convo({me,friend,messages,addNewMessage,friendSrc,friendOnline,friendLastSeen}){
 
     const [myMessage,setMyMessage]=useState("")
+    const navigate=useNavigate()
     console.log(friendOnline)
     console.log(friendLastSeen)
     const status=friendOnline?'available':(friendLastSeen?'away':'unavailable')
@@ -34,9 +36,9 @@ export function Convo({me,friend,messages,addNewMessage,friendSrc,friendOnline,f
    return  <ChatContainer>
       <ConversationHeader>
                     <ConversationHeader.Back />
-                    <Avatar src={slikaSrc}  name={friend} status={status} />
+                    <Avatar src={slikaSrc}  name={friend} status={status} onClick={()=>navigate('/profil/'+friend)} />
                     <Status status={status} />
-                    <ConversationHeader.Content userName={friend} info={lastSeen} status={status} />
+                    <ConversationHeader.Content userName={friend} info={lastSeen} status={status}  onClick={()=>navigate('/profil/'+friend)} />
                     <ConversationHeader.Actions>
                     
                       <InfoButton />
